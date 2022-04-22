@@ -53,8 +53,8 @@ public class LoginServlet extends HttpServlet {
 		System.out.print("登录成功：token ->" + token + "\n");
 		System.out.print("token解析用户名：" + TokenUtil.getUsername(token) + "\n");
 
-		resp.getWriter().write(gson.toJson(new Response<Token>(CodeMessage.TOKEN_ILLEGAL.code,
-				CodeMessage.TOKEN_ILLEGAL.message, new Token(token))));
+		resp.getWriter().write(gson.toJson(new Response<Token>(CodeMessage.OK.code,
+				CodeMessage.OK.message, new Token(token))));
 
 		System.out.print("用户：username->" + username + "  password->" + password + "\n");
 	}

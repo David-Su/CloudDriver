@@ -8,12 +8,6 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 
 public class TokenUtil {
 
-	public static final String SECRET = "jfaksdjfiaosbjxcvbnfng";
-
-	public static final Algorithm ALGORITHM = Algorithm.HMAC256(SECRET);
-
-	private static final String KEY_USERNAME = "key_username";
-
 	// ³¬Ê±¼ä¸ô
 	private static final Long TIMEOUT = 30L * (60 * 1000);
 
@@ -21,12 +15,13 @@ public class TokenUtil {
 
 		Long now = (new Date()).getTime();
 
-		return JWT.create().withClaim(KEY_USERNAME, username).withExpiresAt(new Date(now + TIMEOUT)).sign(ALGORITHM);
+		return JWT.create().withClaim(Cons.Token.KEY_USERNAME, username).withExpiresAt(new Date(now + TIMEOUT))
+				.sign(Cons.Token.ALGORITHM);
 	}
 
 	public static boolean vaild(String token) {
 		try {
-			JWT.require(ALGORITHM).build().verify(token);
+			JWT.require(Cons.Token.ALGORITHM).build().verify(token);
 		} catch (JWTVerificationException exception) {
 			return false;
 		}
@@ -38,6 +33,6 @@ public class TokenUtil {
 	}
 
 	public static String getUsername(String token) {
-		return JWT.decode(token).getClaim(KEY_USERNAME).asString();
+		return JWT.decode(token).getClaim(Cons.Token.KEY_USERNAME).asString();
 	}
 }

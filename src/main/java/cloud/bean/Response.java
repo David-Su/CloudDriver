@@ -2,16 +2,16 @@ package cloud.bean;
 
 public class Response<T> {
 	
-	public Response(String code, String message, T data) {
+	public Response(String code, String message, T result) {
 		super();
 		this.code = code;
 		this.message = message;
-		this.data = data;
+		this.result = result;
 	}
 	
 	private String code;
 	private String message;
-	private T data;
+	private T result;
 
 	public String getCode() {
 		return code;
@@ -29,12 +29,12 @@ public class Response<T> {
 		this.message = message;
 	}
 
-	public T getData() {
-		return data;
+	public T getResult() {
+		return result;
 	}
 
-	public void setData(T data) {
-		this.data = data;
+	public void setResult(T data) {
+		this.result = data;
 	}
 
 }
