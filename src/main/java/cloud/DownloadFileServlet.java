@@ -17,7 +17,7 @@ public class DownloadFileServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		String path = FileUtil.getWholePath(Cons.Path.ROOT_DIR, TokenUtil.getUsername(request.getParameter("token")),
+		String path = FileUtil.getWholePath(Cons.Path.DATA_DIR, TokenUtil.getUsername(request.getParameter("token")),
 				request.getParameter("filePath"));
 
 		// 要下载的文件，此处以项目pom.xml文件举例说明。实际项目请根据实际业务场景获取

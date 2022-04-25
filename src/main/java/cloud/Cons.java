@@ -17,5 +17,8 @@ public final class Cons {
 
 	public static final class Path {
 		public static final String ROOT_DIR = FileUtil.getWholePath(System.getProperty("user.dir"), "CloudDriver");
+		public static final String DATA_DIR = FileUtil.getWholePath(ROOT_DIR,"data");
+		public static final String TEMP_DIR = FileUtil.getWholePath(ROOT_DIR,"temp");
+		public static final String TEMP_UPLOAD_DIR = FileUtil.getWholePath(TEMP_DIR,"upload");
 	}
 }
