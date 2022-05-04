@@ -1,6 +1,7 @@
 package cloud;
 
 import java.io.File;
+
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -14,6 +15,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import com.google.gson.Gson;
 
 import cloud.bean.Response;
@@ -34,7 +37,20 @@ public class GlobalFilter implements Filter {
 			throws IOException, ServletException {
 
 		HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+		HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+		
+		/* 允许跨域的主机地址 */
+		httpServletResponse.setHeader("Access-Control-Allow-Origin", "*");  
+		/* 允许跨域的请求方法GET, POST, HEAD 等 */
+		httpServletResponse.setHeader("Access-Control-Allow-Methods", "*");  
+		/* 重新预检验跨域的缓存时间 (s) */
+//		httpServletResponse.setHeader("Access-Control-Max-Age", "4200");  
+		/* 允许跨域的请求头 */
+		httpServletResponse.setHeader("Access-Control-Allow-Headers", "*");  
+		/* 是否携带cookie */
+		httpServletResponse.setHeader("Access-Control-Allow-Credentials", "true");  
 
+		
 		System.out.print("doFilter:" + httpServletRequest.getRequestURL()+"\n");
 		
 		if (httpServletRequest.getRequestURI().endsWith("/login")) {
