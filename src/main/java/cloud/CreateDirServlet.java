@@ -11,7 +11,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 
+import cloud.bean.CloudFile;
 import cloud.bean.CreateDir;
+import cloud.bean.Response;
 
 @WebServlet("/createdir")
 public class CreateDirServlet extends HttpServlet {
@@ -21,12 +23,19 @@ public class CreateDirServlet extends HttpServlet {
 
 		CreateDir params = JsonUtil.fromJsonStream(req.getInputStream(), CreateDir.class);
 
-		String path = FileUtil.getWholePath(Cons.Path.ROOT_DIR, TokenUtil.getUsername(req.getParameter("token")),
-				params.path);
+		if(params.paths.get(0).equals(Cons.Path.USER_DIR_STUB)) {
+			params.paths.remove(0);
+		}
+		
+
+		String path = FileUtil.getWholePath(Cons.Path.DATA_DIR, TokenUtil.getUsername(req.getParameter("token")),
+				FileUtil.getWholePath(params.paths));
 
 		System.out.print("CreateDirServlet: path->" + path + "\n");
 
 		System.out.print("CreateDirServlet: mkdirs->" + new File(path).mkdirs() + "\n");
+
+		resp.getWriter().write(JsonUtil.toJson(new Response<>(CodeMessage.OK.code, CodeMessage.OK.message, null)));
 
 	}
 }

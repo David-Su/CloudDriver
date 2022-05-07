@@ -4,6 +4,9 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -11,19 +14,27 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import cloud.bean.DownloadFile;
+
 @WebServlet("/downloadfile")
 public class DownloadFileServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
+		List<String> paths = new ArrayList<String>(Arrays.asList(request.getParameter("filePaths").split(",")));
+
+		if (paths.get(0).equals(Cons.Path.USER_DIR_STUB)) {
+			paths.remove(0);
+		}
+
 		String path = FileUtil.getWholePath(Cons.Path.DATA_DIR, TokenUtil.getUsername(request.getParameter("token")),
-				request.getParameter("filePath"));
+				FileUtil.getWholePath(paths));
 
 		// 要下载的文件，此处以项目pom.xml文件举例说明。实际项目请根据实际业务场景获取
 		File file = new File(path);
 
-		System.out.print("DownloadFileServlet: path->"+path);
+		System.out.print("DownloadFileServlet: path->" + path);
 //		File file = new File("C:\\Users\\admin\\Desktop\\video.mkv");
 
 		// 开始下载位置

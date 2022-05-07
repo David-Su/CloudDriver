@@ -41,10 +41,10 @@ public class LoginServlet extends HttpServlet {
 		if (!username.equals("root") || !password.equals("root")) {
 
 			System.out.print("’À∫≈√‹¬Î¥ÌŒÛ£∫" + gson
-					.toJson(new Response<>(CodeMessage.TOKEN_ILLEGAL.code, CodeMessage.TOKEN_ILLEGAL.message, null)));
+					.toJson(new Response<>(CodeMessage.UN_OR_PW_ERROR.code, CodeMessage.UN_OR_PW_ERROR.message, null)));
 
 			resp.getWriter().write(gson
-					.toJson(new Response<>(CodeMessage.TOKEN_ILLEGAL.code, CodeMessage.TOKEN_ILLEGAL.message, null)));
+					.toJson(new Response<>(CodeMessage.UN_OR_PW_ERROR.code, CodeMessage.UN_OR_PW_ERROR.message, null)));
 			return;
 		}
 

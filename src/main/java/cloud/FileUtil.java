@@ -1,30 +1,38 @@
 package cloud;
 
 import java.io.File;
+import java.util.List;
 
 public final class FileUtil {
 
-	public static String getWholePath(String... path) {
+	public static String getWholePath(List<String> paths) {
+		return getWholePath(paths.toArray(new String[paths.size()]));
+	}
+	
+	public static String getWholePath(String... paths) {
 
 		StringBuilder wholePath = new StringBuilder("");
 
-		for (int i = 0; i < path.length; i++) {
-			wholePath.append(path[i]).append(File.separator);
+		for (int i = 0; i < paths.length; i++) {
+			if (i > 0) {
+				wholePath.append(File.separator);
+			}
+			wholePath.append(paths[i]);
 		}
 
 		return wholePath.toString();
 	}
-	
+
 	public static void deleteFile(File file) {
-		
-		if(file.isFile()) {
+
+		if (file.isFile()) {
 			file.delete();
 			return;
 		}
-		
+
 		File[] files = file.listFiles();
-		
-		for(int i = 0;i<files.length;i++) {
+
+		for (int i = 0; i < files.length; i++) {
 			deleteFile(files[i]);
 		}
 		file.delete();

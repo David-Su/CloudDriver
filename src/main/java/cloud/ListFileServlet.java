@@ -3,6 +3,7 @@ package cloud;
 import java.io.File;
 
 import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import com.google.gson.Gson;
 
 import cloud.bean.CloudFile;
 import cloud.bean.CreateDir;
+import cloud.bean.Response;
 
 @WebServlet("/listfile")
 public class ListFileServlet extends HttpServlet {
@@ -24,21 +26,24 @@ public class ListFileServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
 		File userDir = new File(
-				FileUtil.getWholePath(Cons.Path.ROOT_DIR, TokenUtil.getUsername(req.getParameter("token"))));
+				FileUtil.getWholePath(Cons.Path.DATA_DIR, TokenUtil.getUsername(req.getParameter("token"))));
 
 		if (!userDir.exists()) {
 			userDir.mkdirs();
 		}
 
-		System.out.print("DeleteFileServlet: userDir->" + userDir + "\n");
+		System.out.print("ListFileServlet: userDir->" + userDir + "\n");
 
 //		FileUtil.deleteFile(new File(path));
 
 		CloudFile cloudFile = new CloudFile();
-		cloudFile.name = File.separator;
+		cloudFile.name = Cons.Path.USER_DIR_STUB;
 		cloudFile.children = generateCloudFile(userDir);
+
+		Writer writer = resp.getWriter();
 		
-		resp.getWriter().write(JsonUtil.toJson(cloudFile));
+		writer.write(
+				JsonUtil.toJson(new Response<CloudFile>(CodeMessage.OK.code, CodeMessage.OK.message, cloudFile)));
 	}
 
 	private List<CloudFile> generateCloudFile(File file) {
