@@ -86,7 +86,7 @@ public class DownloadFileServlet extends HttpServlet {
 		response.setHeader("Content-Type", contentType);
 		// Content-Disposition 表示响应内容以何种形式展示，是以内联的形式（即网页或者页面的一部分），还是以附件的形式下载并保存到本地。
 		// 这里文件名换成下载后你想要的文件名，inline表示内联的形式，即：浏览器直接下载
-		response.setHeader("Content-Disposition", "inline;filename=" + file.getName());
+		response.setHeader("Content-Disposition", "attachment;filename=" + file.getName());
 		// Content-Length 表示资源内容长度，即：文件大小
 		response.setHeader("Content-Length", String.valueOf(contentLength));
 		// Content-Range 表示响应了多少数据，格式为：[要下载的开始位置]-[结束位置]/[文件总大小]

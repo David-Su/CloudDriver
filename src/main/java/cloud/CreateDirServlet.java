@@ -21,7 +21,7 @@ public class CreateDirServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-		CreateDir params = JsonUtil.fromJsonStream(req.getInputStream(), CreateDir.class);
+		CreateDir params = JsonUtil.fromJsonReader(req.getReader(), CreateDir.class);
 
 		if(params.paths.get(0).equals(Cons.Path.USER_DIR_STUB)) {
 			params.paths.remove(0);

@@ -23,7 +23,9 @@ public class DeleteFileServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-		DeleteFile params = JsonUtil.fromJsonStream(req.getInputStream(), DeleteFile.class);
+		
+		
+		DeleteFile params = JsonUtil.fromJsonReader(req.getReader(), DeleteFile.class);
 
 		if(params.paths.get(0).equals(Cons.Path.USER_DIR_STUB)) {
 			params.paths.remove(0);

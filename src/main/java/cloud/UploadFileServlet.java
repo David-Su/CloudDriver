@@ -29,13 +29,15 @@ public class UploadFileServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
 
-		String path = FileUtil.getWholePath(Cons.Path.DATA_DIR, TokenUtil.getUsername(request.getParameter("token")),
-				request.getParameter("path"));
+		String path = FileUtil.getWholePath(request.getParameter("path").split(","));
+
+		String realPath = FileUtil.getWholePath(Cons.Path.DATA_DIR,
+				TokenUtil.getUsername(request.getParameter("token")), path);
 
 		String tempPath = FileUtil.getWholePath(Cons.Path.TEMP_UPLOAD_DIR,
-				TokenUtil.getUsername(request.getParameter("token")), request.getParameter("path"));
+				TokenUtil.getUsername(request.getParameter("token")), path);
 
-		System.out.print("UploadFileServlet: path->" + path + "\n");
+		System.out.print("UploadFileServlet: realPath->" + realPath + "\n");
 		System.out.print("UploadFileServlet: tempPath->" + tempPath + "\n");
 
 		ServletFileUpload upload = new ServletFileUpload(new DiskFileItemFactory());
@@ -44,7 +46,7 @@ public class UploadFileServlet extends HttpServlet {
 
 		for (FileItem item : list) {
 
-			File realFile = new File(FileUtil.getWholePath(path, item.getName()));
+			File realFile = new File(FileUtil.getWholePath(realPath, item.getName()));
 			File tempFile = new File(FileUtil.getWholePath(tempPath, item.getName()));
 
 			System.out.print("UploadFileServlet: tempFile->" + tempFile + "\n");
@@ -79,7 +81,7 @@ public class UploadFileServlet extends HttpServlet {
 			int len = 0;
 
 			while ((len = is.read(buffer)) > 0) {
-				System.out.print("UploadFileServlet: read->" + len + "\n");
+//				System.out.print("UploadFileServlet: read->" + len + "\n");
 				randomTempFile.write(buffer, 0, len);
 			}
 

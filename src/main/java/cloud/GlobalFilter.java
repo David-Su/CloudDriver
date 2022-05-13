@@ -39,6 +39,9 @@ public class GlobalFilter implements Filter {
 		HttpServletRequest httpServletRequest = (HttpServletRequest) request;
 		HttpServletResponse httpServletResponse = (HttpServletResponse) response;
 		
+		response.setCharacterEncoding("UTF-8");
+		request.setCharacterEncoding("UTF-8");
+		
 		/* 允许跨域的主机地址 */
 		httpServletResponse.setHeader("Access-Control-Allow-Origin", "*");  
 		/* 允许跨域的请求方法GET, POST, HEAD 等 */
@@ -60,7 +63,7 @@ public class GlobalFilter implements Filter {
 		} else {
 			String token = request.getParameter("token");
 
-			if ((token == null || token.isEmpty()) || !TokenUtil.vaild(token)) {
+			if ((token == null || token.isEmpty())) {
 				response.getWriter().write(gson.toJson(
 						new Response<>(CodeMessage.TOKEN_ILLEGAL.code, CodeMessage.TOKEN_ILLEGAL.message, null)));
 				return;
@@ -73,6 +76,12 @@ public class GlobalFilter implements Filter {
 				return;
 			}
 
+			if (!TokenUtil.vaild(token)) {
+				response.getWriter().write(gson.toJson(
+						new Response<>(CodeMessage.TOKEN_ILLEGAL.code, CodeMessage.TOKEN_ILLEGAL.message, null)));
+				return;
+			}
+			
 			chain.doFilter(request, response);
 		}
 	}

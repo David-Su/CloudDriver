@@ -9,7 +9,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 public class TokenUtil {
 
 	// ³¬Ê±¼ä¸ô
-	private static final Long TIMEOUT = 30L * (60 * 1000);
+	private static final Long TIMEOUT = 1L * (60 * 1000);
 
 	public static String getToken(String username) {
 
