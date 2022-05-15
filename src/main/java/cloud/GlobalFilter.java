@@ -70,7 +70,6 @@ public class GlobalFilter implements Filter {
 			}
 
 			if (TokenUtil.timeout(token)) {
-				response.setCharacterEncoding(token);
 				response.getWriter().write(gson.toJson(
 						new Response<>(CodeMessage.TOKEN_TIMEOUT.code, CodeMessage.TOKEN_TIMEOUT.message, null)));
 				return;
