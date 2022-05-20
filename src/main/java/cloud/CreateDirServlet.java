@@ -23,19 +23,22 @@ public class CreateDirServlet extends HttpServlet {
 
 		CreateDir params = JsonUtil.fromJsonReader(req.getReader(), CreateDir.class);
 
-		if(params.paths.get(0).equals(Cons.Path.USER_DIR_STUB)) {
+		if (params.paths.get(0).equals(Cons.Path.USER_DIR_STUB)) {
 			params.paths.remove(0);
 		}
-		
 
 		String path = FileUtil.getWholePath(Cons.Path.DATA_DIR, TokenUtil.getUsername(req.getParameter("token")),
 				FileUtil.getWholePath(params.paths));
+
+		boolean result = new File(path).mkdirs();
 
 		System.out.print("CreateDirServlet: path->" + path + "\n");
 
 		System.out.print("CreateDirServlet: mkdirs->" + new File(path).mkdirs() + "\n");
 
-		resp.getWriter().write(JsonUtil.toJson(new Response<>(CodeMessage.OK.code, CodeMessage.OK.message, null)));
+		resp.getWriter().write(JsonUtil.toJson(result
+				? new Response<Void>(CodeMessage.OK.code, CodeMessage.OK.message, null)
+				: new Response<Void>(CodeMessage.CREATE_DIR_FAIL.code, CodeMessage.CREATE_DIR_FAIL.message, null)));
 
 	}
 }

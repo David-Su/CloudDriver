@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -29,7 +31,13 @@ public class UploadFileServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
 
-		String path = FileUtil.getWholePath(request.getParameter("path").split(","));
+		ArrayList<String> pathArray = new ArrayList<>(Arrays.asList(request.getParameter("path").split(",")));
+
+		if(!pathArray.isEmpty() && pathArray.get(0).equals(Cons.Path.USER_DIR_STUB)) {
+			pathArray.remove(0);
+		}
+		
+		String path = FileUtil.getWholePath(pathArray);
 
 		String realPath = FileUtil.getWholePath(Cons.Path.DATA_DIR,
 				TokenUtil.getUsername(request.getParameter("token")), path);
@@ -66,6 +74,13 @@ public class UploadFileServlet extends HttpServlet {
 				}
 				tempFile.createNewFile();
 			}
+
+			// TODO 暂时不支持断点上传
+			else {
+				tempFile.delete();
+				tempFile.createNewFile();
+			}
+			// TODO 暂时不支持断点上传
 
 			long skip = tempFile.length();
 

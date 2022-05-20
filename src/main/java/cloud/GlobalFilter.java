@@ -24,11 +24,15 @@ import cloud.bean.Response;
 @WebFilter(filterName = "GlobalFilter", urlPatterns = "/*"/* 通配符（*）表示对所有的web资源进行拦截 */)
 public class GlobalFilter implements Filter {
 
-	Gson gson = new Gson();
+	private Gson gson = new Gson();
 
 	@Override
+	public void init(FilterConfig filterConfig) throws ServletException {
+		
+	}
+	
+	@Override
 	public void destroy() {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -83,12 +87,6 @@ public class GlobalFilter implements Filter {
 			
 			chain.doFilter(request, response);
 		}
-	}
-
-	@Override
-	public void init(FilterConfig filterConfig) throws ServletException {
-		// TODO Auto-generated method stub
-
 	}
 
 }
