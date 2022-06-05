@@ -4,8 +4,10 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -14,6 +16,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.tomcat.util.buf.Utf8Decoder;
 
 @WebServlet("/downloadfile")
 public class DownloadFileServlet extends HttpServlet {
@@ -21,7 +24,11 @@ public class DownloadFileServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		List<String> paths = new ArrayList<String>(Arrays.asList(request.getParameter("filePaths").split(",")));
+		String filePaths = new String(Base64.getUrlDecoder().decode(request.getParameter("filePaths")), "utf-8");
+
+		System.out.print("filePaths->" + filePaths + "\n");
+
+		List<String> paths = new ArrayList<String>(Arrays.asList(filePaths.split(",")));
 
 		if (paths.get(0).equals(Cons.Path.USER_DIR_STUB)) {
 			paths.remove(0);
