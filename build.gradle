@@ -1,0 +1,49 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.kotlin.jvm' version '1.6.20'
+    id 'war'
+}
+
+group 'cloud'
+version '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    junitVersion = '5.8.2'
+}
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+[compileKotlin, compileTestKotlin].forEach {
+    it.kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+
+dependencies {
+    compileOnly('javax.servlet:javax.servlet-api:4.0.1')
+
+    testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
+
+    implementation("com.google.code.gson:gson:2.9.0")
+    implementation("com.squareup.okhttp:okhttp:2.7.5")
+    implementation("net.lingala.zip4j:zip4j:2.10.0")
+    implementation("com.auth0:java-jwt:3.19.2")
+
+    implementation(files(file("src/libs").listFiles()))
+//    print(file("/"))
+}
+
+test {
+    useJUnitPlatform()
+}
