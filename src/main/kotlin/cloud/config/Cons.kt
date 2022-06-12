@@ -14,7 +14,7 @@ class Cons {
     }
 
     object Path {
-        private val ROOT_DIR = FileUtil.getWholePath(System.getProperty("user.dir"), "CloudDriver")
+        private val ROOT_DIR = FileUtil.getWholePath(System.getProperty("user.home"), "CloudDriver")
         private val TEMP_DIR = FileUtil.getWholePath(ROOT_DIR, "temp")
         val DATA_DIR = FileUtil.getWholePath(ROOT_DIR, "data")
         val TEMP_UPLOAD_DIR = FileUtil.getWholePath(TEMP_DIR, "upload")
