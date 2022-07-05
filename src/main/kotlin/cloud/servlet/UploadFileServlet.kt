@@ -25,7 +25,7 @@ import kotlin.time.measureTime
 
 @WebServlet("/uploadfile")
 class UploadFileServlet : HttpServlet() {
-    // TODO ÔİÊ±²»Ö§³Ö¶ÏµãÉÏ´«
+    // TODO æš‚æ—¶ä¸æ”¯æŒæ–­ç‚¹ä¸Šä¼ 
     @OptIn(ExperimentalTime::class)
     @Throws(IOException::class, FileUploadException::class)
     override fun doPost(request: HttpServletRequest, resp: HttpServletResponse) {
@@ -42,7 +42,7 @@ class UploadFileServlet : HttpServlet() {
 
         val list: List<FileItem>
 
-        logger.info("parseRequestºÄÊ±£º${measureTime { list = upload.parseRequest(ServletRequestContext(request)) }.inWholeSeconds}")
+        logger.info("parseRequestè€—æ—¶ï¼š${measureTime { list = upload.parseRequest(ServletRequestContext(request)) }.inWholeSeconds}")
 
         list.forEach { item ->
 
@@ -56,7 +56,7 @@ class UploadFileServlet : HttpServlet() {
             }
 
 
-            logger.info("Ğ´ÈëÖ÷ÎÄ¼şºÄÊ±£º${measureTime { item.write(realFile) }.inWholeSeconds}")
+            logger.info("å†™å…¥ä¸»æ–‡ä»¶è€—æ—¶ï¼š${measureTime { item.write(realFile) }.inWholeSeconds}")
 
         }
 

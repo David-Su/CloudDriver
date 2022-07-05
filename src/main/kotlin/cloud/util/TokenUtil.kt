@@ -6,7 +6,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException
 import java.util.*
 
 object TokenUtil {
-    // ³¬Ê±¼ä¸ô
+    // è¶…æ—¶é—´éš”
     private const val TIMEOUT = 30L * (60 * 1000)
     fun getToken(username: String?): String {
         val now = Date().time

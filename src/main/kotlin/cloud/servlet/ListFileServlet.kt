@@ -31,9 +31,11 @@ class ListFileServlet : HttpServlet() {
 //        print("userDir->$userDir\n")
 
 //		FileUtil.deleteFile(new File(path));
-        val cloudFile = CloudFile()
-        cloudFile.name = Cons.Path.USER_DIR_STUB
-        cloudFile.children = generateCloudFile(userDir)
+        val cloudFile = CloudFile(
+                Cons.Path.USER_DIR_STUB,
+                true,
+                generateCloudFile(userDir)
+        )
         val writer: Writer = resp.writer
         writer.write(
                 JsonUtil.toJson(Response(CodeMessage.OK.code, CodeMessage.OK.message, cloudFile)))
@@ -45,12 +47,12 @@ class ListFileServlet : HttpServlet() {
         val cloudFiles: MutableList<CloudFile> = ArrayList()
         for (i in children.indices) {
             val child = children[i]
-            val cloudFile = CloudFile()
-            cloudFile.name = child.name
-            cloudFile.isDir = child.isDirectory
-            if (cloudFile.isDir) {
-                cloudFile.children = generateCloudFile(child)
-            }
+            val cloudFile = CloudFile(
+                    child.name,
+                    child.isDirectory,
+                    if (child.isDirectory) generateCloudFile(child) else null,
+                    if (!child.isDirectory) child.length() else null,
+            )
             cloudFiles.add(cloudFile)
         }
         return cloudFiles

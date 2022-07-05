@@ -31,20 +31,20 @@ class LoginServlet : HttpServlet() {
         val username = body["username"].asString
         val password = body["password"].asString
         if (username != "root" || password != "root") {
-            print("ÕËºÅÃÜÂë´íÎó£º" + gson
+            print("è´¦å·å¯†ç é”™è¯¯ï¼š" + gson
                     .toJson(Response<Any?>(CodeMessage.UN_OR_PW_ERROR.code, CodeMessage.UN_OR_PW_ERROR.message, null)))
             resp.writer.write(gson
                     .toJson(Response<Any?>(CodeMessage.UN_OR_PW_ERROR.code, CodeMessage.UN_OR_PW_ERROR.message, null)))
             return
         }
         val token = TokenUtil.getToken(username)
-        print("µÇÂ¼³É¹¦£ºtoken ->$token\n")
+        print("ç™»å½•æˆåŠŸï¼štoken ->$token\n")
         print("""
-    token½âÎöÓÃ»§Ãû£º${TokenUtil.getUsername(token)}
+    tokenè§£æç”¨æˆ·åï¼š${TokenUtil.getUsername(token)}
     
     """.trimIndent())
         resp.writer.write(gson.toJson(Response(CodeMessage.OK.code,
                 CodeMessage.OK.message, Token(token))))
-        print("ÓÃ»§£ºusername->$username  password->$password\n")
+        print("ç”¨æˆ·ï¼šusername->$username  password->$password\n")
     }
 }

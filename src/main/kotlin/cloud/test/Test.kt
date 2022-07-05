@@ -6,7 +6,8 @@ object Test {
     @Throws(IOException::class)
     @JvmStatic
     fun main(args: Array<String>) {
-        Baidu().main()
-        Zip().main()
+//        Baidu().main()
+//        Zip().main()
+        Video.getFrame()
     }
 }

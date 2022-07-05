@@ -22,25 +22,25 @@ class DownloadFileServlet : HttpServlet() {
         val path = FileUtil.getWholePath(Cons.Path.DATA_DIR, TokenUtil.getUsername(request.getParameter("token")),
                 CloudFileUtil.getWholePath(filePaths))
 
-        // ÒªÏÂÔØµÄÎÄ¼ş£¬´Ë´¦ÒÔÏîÄ¿pom.xmlÎÄ¼ş¾ÙÀıËµÃ÷¡£Êµ¼ÊÏîÄ¿Çë¸ù¾İÊµ¼ÊÒµÎñ³¡¾°»ñÈ¡
+        // è¦ä¸‹è½½çš„æ–‡ä»¶ï¼Œæ­¤å¤„ä»¥é¡¹ç›®pom.xmlæ–‡ä»¶ä¸¾ä¾‹è¯´æ˜ã€‚å®é™…é¡¹ç›®è¯·æ ¹æ®å®é™…ä¸šåŠ¡åœºæ™¯è·å–
         val file = File(path)
         print("DownloadFileServlet: path->$path")
         //		File file = new File("C:\\Users\\admin\\Desktop\\video.mkv");
 
-        // ¿ªÊ¼ÏÂÔØÎ»ÖÃ
+        // å¼€å§‹ä¸‹è½½ä½ç½®
         var startByte: Long = 0
-        // ½áÊøÏÂÔØÎ»ÖÃ
+        // ç»“æŸä¸‹è½½ä½ç½®
         var endByte = file.length() - 1
         var range = request.getHeader("Range")
 
-        // ÓĞrangeµÄ»°
+        // æœ‰rangeçš„è¯
         if (range != null && range.contains("bytes=") && range.contains("-")) {
             range = range.substring(range.lastIndexOf("=") + 1).trim { it <= ' ' }
             val ranges = range.split("-".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
             try {
-                // ¸ù¾İrange½âÎöÏÂÔØ·ÖÆ¬µÄÎ»ÖÃÇø¼ä
+                // æ ¹æ®rangeè§£æä¸‹è½½åˆ†ç‰‡çš„ä½ç½®åŒºé—´
                 if (ranges.size == 1) {
-                    // Çé¿ö1£¬Èç£ºbytes=-1024 ´Ó¿ªÊ¼×Ö½Úµ½µÚ1024¸ö×Ö½ÚµÄÊı¾İ
+                    // æƒ…å†µ1ï¼Œå¦‚ï¼šbytes=-1024 ä»å¼€å§‹å­—èŠ‚åˆ°ç¬¬1024ä¸ªå­—èŠ‚çš„æ•°æ®
                     if (range.startsWith("-")) {
                         endByte = ranges[0].toLong()
                     } else if (range.endsWith("-")) {
@@ -56,30 +56,30 @@ class DownloadFileServlet : HttpServlet() {
             }
         }
 
-        // ÒªÏÂÔØµÄ³¤¶È
+        // è¦ä¸‹è½½çš„é•¿åº¦
         val contentLength = endByte - startByte + 1
-        // ÎÄ¼şÃû
+        // æ–‡ä»¶å
         val fileName = file.name
-        // ÎÄ¼şÀàĞÍ
+        // æ–‡ä»¶ç±»å‹
         val contentType = request.servletContext.getMimeType(fileName)
 
-        // ÏìÓ¦Í·ÉèÖÃ
+        // å“åº”å¤´è®¾ç½®
         // https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Accept-Ranges
         response.setHeader("Accept-Ranges", "bytes")
-        // Content-Type ±íÊ¾×ÊÔ´ÀàĞÍ£¬Èç£ºÎÄ¼şÀàĞÍ
+        // Content-Type è¡¨ç¤ºèµ„æºç±»å‹ï¼Œå¦‚ï¼šæ–‡ä»¶ç±»å‹
         response.setHeader("Content-Type", contentType)
-        // Content-Disposition ±íÊ¾ÏìÓ¦ÄÚÈİÒÔºÎÖÖĞÎÊ½Õ¹Ê¾£¬ÊÇÒÔÄÚÁªµÄĞÎÊ½£¨¼´ÍøÒ³»òÕßÒ³ÃæµÄÒ»²¿·Ö£©£¬»¹ÊÇÒÔ¸½¼şµÄĞÎÊ½ÏÂÔØ²¢±£´æµ½±¾µØ¡£
-        // ÕâÀïÎÄ¼şÃû»»³ÉÏÂÔØºóÄãÏëÒªµÄÎÄ¼şÃû£¬inline±íÊ¾ÄÚÁªµÄĞÎÊ½£¬¼´£ºä¯ÀÀÆ÷Ö±½ÓÏÂÔØ
+        // Content-Disposition è¡¨ç¤ºå“åº”å†…å®¹ä»¥ä½•ç§å½¢å¼å±•ç¤ºï¼Œæ˜¯ä»¥å†…è”çš„å½¢å¼ï¼ˆå³ç½‘é¡µæˆ–è€…é¡µé¢çš„ä¸€éƒ¨åˆ†ï¼‰ï¼Œè¿˜æ˜¯ä»¥é™„ä»¶çš„å½¢å¼ä¸‹è½½å¹¶ä¿å­˜åˆ°æœ¬åœ°ã€‚
+        // è¿™é‡Œæ–‡ä»¶åæ¢æˆä¸‹è½½åä½ æƒ³è¦çš„æ–‡ä»¶åï¼Œinlineè¡¨ç¤ºå†…è”çš„å½¢å¼ï¼Œå³ï¼šæµè§ˆå™¨ç›´æ¥ä¸‹è½½
         response.setHeader("Content-Disposition", "attachment;filename=" + file.name)
-        // Content-Length ±íÊ¾×ÊÔ´ÄÚÈİ³¤¶È£¬¼´£ºÎÄ¼ş´óĞ¡
+        // Content-Length è¡¨ç¤ºèµ„æºå†…å®¹é•¿åº¦ï¼Œå³ï¼šæ–‡ä»¶å¤§å°
         response.setHeader("Content-Length", contentLength.toString())
-        // Content-Range ±íÊ¾ÏìÓ¦ÁË¶àÉÙÊı¾İ£¬¸ñÊ½Îª£º[ÒªÏÂÔØµÄ¿ªÊ¼Î»ÖÃ]-[½áÊøÎ»ÖÃ]/[ÎÄ¼ş×Ü´óĞ¡]
+        // Content-Range è¡¨ç¤ºå“åº”äº†å¤šå°‘æ•°æ®ï¼Œæ ¼å¼ä¸ºï¼š[è¦ä¸‹è½½çš„å¼€å§‹ä½ç½®]-[ç»“æŸä½ç½®]/[æ–‡ä»¶æ€»å¤§å°]
         response.setHeader("Content-Range", "bytes " + startByte + "-" + endByte + "/" + file.length())
         response.status = HttpServletResponse.SC_OK
         response.contentType = contentType
         var outputStream: BufferedOutputStream? = null
         var randomAccessFile: RandomAccessFile? = null
-        // ÒÑ´«ËÍÊı¾İ´óĞ¡
+        // å·²ä¼ é€æ•°æ®å¤§å°
         var transmitted: Long = 0
         try {
             randomAccessFile = RandomAccessFile(file, "r")
@@ -87,12 +87,12 @@ class DownloadFileServlet : HttpServlet() {
             val buff = ByteArray(2048)
             var len = 0
             randomAccessFile.seek(startByte)
-            // ÅĞ¶ÏÊÇ·ñµ½ÁË×îºó²»×ã2048£¨buffµÄlength£©¸öbyte
+            // åˆ¤æ–­æ˜¯å¦åˆ°äº†æœ€åä¸è¶³2048ï¼ˆbuffçš„lengthï¼‰ä¸ªbyte
             while (transmitted + len <= contentLength && randomAccessFile.read(buff).also { len = it } != -1) {
                 outputStream.write(buff, 0, len)
                 transmitted += len.toLong()
             }
-            // ´¦Àí²»×ãbuff.length²¿·Ö
+            // å¤„ç†ä¸è¶³buff.lengthéƒ¨åˆ†
             if (transmitted < contentLength) {
                 len = randomAccessFile.read(buff, 0, (contentLength - transmitted).toInt())
                 outputStream.write(buff, 0, len)

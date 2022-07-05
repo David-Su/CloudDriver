@@ -1,7 +1,8 @@
 package cloud.bean
 
-class CloudFile {
-    var name: String? = null
-    var isDir = false
-    var children: List<CloudFile>? = null
-}
+data class CloudFile(
+        val name: String? = null,
+        val isDir: Boolean = false,
+        val children: List<CloudFile>? = null,
+        val size: Long?=null
+)

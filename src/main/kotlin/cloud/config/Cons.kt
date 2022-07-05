@@ -18,6 +18,6 @@ class Cons {
         private val TEMP_DIR = FileUtil.getWholePath(ROOT_DIR, "temp")
         val DATA_DIR = FileUtil.getWholePath(ROOT_DIR, "data")
         val TEMP_UPLOAD_DIR = FileUtil.getWholePath(TEMP_DIR, "upload")
-        const val USER_DIR_STUB = "." //�û�Ŀ¼ռλ��
+        const val USER_DIR_STUB = "." //用户目录占位符
     }
 }

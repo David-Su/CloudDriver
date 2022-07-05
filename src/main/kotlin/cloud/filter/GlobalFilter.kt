@@ -25,12 +25,12 @@ class GlobalFilter : Filter {
         response.setCharacterEncoding("UTF-8")
         request.setCharacterEncoding("UTF-8")
 
-        /* ÔÊĞí¿çÓòµÄÖ÷»úµØÖ· */httpServletResponse.setHeader("Access-Control-Allow-Origin", "*")
-        /* ÔÊĞí¿çÓòµÄÇëÇó·½·¨GET, POST, HEAD µÈ */httpServletResponse.setHeader("Access-Control-Allow-Methods", "*")
-        /* ÖØĞÂÔ¤¼ìÑé¿çÓòµÄ»º´æÊ±¼ä (s) */
+        /* å…è®¸è·¨åŸŸçš„ä¸»æœºåœ°å€ */httpServletResponse.setHeader("Access-Control-Allow-Origin", "*")
+        /* å…è®¸è·¨åŸŸçš„è¯·æ±‚æ–¹æ³•GET, POST, HEAD ç­‰ */httpServletResponse.setHeader("Access-Control-Allow-Methods", "*")
+        /* é‡æ–°é¢„æ£€éªŒè·¨åŸŸçš„ç¼“å­˜æ—¶é—´ (s) */
 //		httpServletResponse.setHeader("Access-Control-Max-Age", "4200");  
-        /* ÔÊĞí¿çÓòµÄÇëÇóÍ· */httpServletResponse.setHeader("Access-Control-Allow-Headers", "*")
-        /* ÊÇ·ñĞ¯´øcookie */httpServletResponse.setHeader("Access-Control-Allow-Credentials", "true")
+        /* å…è®¸è·¨åŸŸçš„è¯·æ±‚å¤´ */httpServletResponse.setHeader("Access-Control-Allow-Headers", "*")
+        /* æ˜¯å¦æºå¸¦cookie */httpServletResponse.setHeader("Access-Control-Allow-Credentials", "true")
         print("""
     doFilter:${httpServletRequest.requestURL}
     

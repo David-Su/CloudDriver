@@ -13,33 +13,33 @@ class Test : HttpServlet() {
     @Throws(ServletException::class, IOException::class)
     override fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
         print("doGet")
-//		//3.µÃµ½Ö´ĞĞsqlµÄ¶ÔÏóSqlSession 
+//		//3.å¾—åˆ°æ‰§è¡Œsqlçš„å¯¹è±¡SqlSession 
 //		SqlSession sqlSession = MyBatisManager.getInstance().getSessionFactory().openSession();
-//		//4.Ö´ĞĞsqlÓï¾ä
+//		//4.æ‰§è¡Œsqlè¯­å¥
 //		List<User> list = sqlSession.selectList("findAllUser");
-//		//5.´¦Àí½á¹û
+//		//5.å¤„ç†ç»“æœ
 //		for (User user: list) {
-//			System.out.println("ÓÃ»§Ãû£º"+user.getUsername()+"£¬ÃÜÂë£º"+user.getPassword());
+//			System.out.println("ç”¨æˆ·åï¼š"+user.getUsername()+"ï¼Œå¯†ç ï¼š"+user.getPassword());
 //		}
-//		//6.¹Ø±ÕÊı¾İ¿â»á»°
+//		//6.å…³é—­æ•°æ®åº“ä¼šè¯
 //		sqlSession.close();
 //		
 //		resp.getWriter().write(getClass().getClassLoader().getResource(".").getPath());
 
-//		System.out.print("doGet ÎÄ¼ş´óĞ¡-¡·"+ video.length()+"\n");
+//		System.out.print("doGet æ–‡ä»¶å¤§å°-ã€‹"+ video.length()+"\n");
         print("""
     Range==${request.getHeader("Range")}
     
     """.trimIndent())
         val sb = StringBuilder()
 
-        //1. »ñÈ¡±¾»úÅÌ·û
+        //1. è·å–æœ¬æœºç›˜ç¬¦
         val roots = File.listRoots()
         for (i in roots.indices) {
-            sb.append(roots[i].path + "; ") //´ÅÅÌÂ·¾¶
-            sb.append((roots[i].totalSpace / 1024 / 1024).toString() + "; ") //´ÅÅÌ×Ü¿Õ¼ä´óĞ¡
-            sb.append((roots[i].usableSpace / 1024 / 1024).toString() + "; ") //Ê£Óà´ÅÅÌ¿Õ¼ä´óĞ¡
-            sb.append(roots[i].freeSpace / 1024 / 1024) //Ê£Óà´ÅÅÌ¿Õ¼ä´óĞ¡
+            sb.append(roots[i].path + "; ") //ç£ç›˜è·¯å¾„
+            sb.append((roots[i].totalSpace / 1024 / 1024).toString() + "; ") //ç£ç›˜æ€»ç©ºé—´å¤§å°
+            sb.append((roots[i].usableSpace / 1024 / 1024).toString() + "; ") //å‰©ä½™ç£ç›˜ç©ºé—´å¤§å°
+            sb.append(roots[i].freeSpace / 1024 / 1024) //å‰©ä½™ç£ç›˜ç©ºé—´å¤§å°
             sb.append("\n")
         }
         response.writer.write(sb.toString())

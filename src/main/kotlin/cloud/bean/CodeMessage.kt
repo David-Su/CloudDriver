@@ -1,5 +1,5 @@
 package cloud.bean
 
 enum class CodeMessage(var code: String, var message: String) {
-    OK("0000", ""), TOKEN_ILLEGAL("0001", "·Ç·¨token"), TOKEN_TIMEOUT("0002", "token¹ıÆÚ"), UN_OR_PW_ERROR("0003", "ÕËºÅ»òÃÜÂë´íÎó"), CREATE_DIR_FAIL("0004", "´´½¨ÎÄ¼ş¼ĞÄ¿Â¼Ê§°Ü");
+    OK("0000", ""), TOKEN_ILLEGAL("0001", "éæ³•token"), TOKEN_TIMEOUT("0002", "tokenè¿‡æœŸ"), UN_OR_PW_ERROR("0003", "è´¦å·æˆ–å¯†ç é”™è¯¯"), CREATE_DIR_FAIL("0004", "åˆ›å»ºæ–‡ä»¶å¤¹ç›®å½•å¤±è´¥");
 }
