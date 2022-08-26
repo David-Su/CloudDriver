@@ -1,7 +1,7 @@
 package cloud.servlet
 
 import cloud.config.Cons
-import cloud.config.FileUtil
+import cloud.util.FileUtil
 import cloud.util.CloudFileUtil
 import cloud.util.TokenUtil
 import java.io.*
@@ -14,12 +14,25 @@ import javax.servlet.http.HttpServletResponse
 
 @WebServlet("/downloadfile")
 class DownloadFileServlet : HttpServlet() {
+
+    companion object {
+        const val FILE_TYPE_DATA = 1
+        const val FILE_TYPE_TEMP_PREVIEW = 2
+    }
+
     @Throws(ServletException::class, IOException::class)
     override fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
         val filePaths = Base64.getUrlDecoder().decode(request.getParameter("filePaths")).toString(Charsets.UTF_8)
+        val fileType = request.getParameter("fileType")?.toInt() ?: FILE_TYPE_DATA
         print("filePaths->$filePaths\n")
 
-        val path = FileUtil.getWholePath(Cons.Path.DATA_DIR, TokenUtil.getUsername(request.getParameter("token")),
+        val dir = when (fileType) {
+            FILE_TYPE_TEMP_PREVIEW -> Cons.Path.TEMP_PREVIEW_DIR
+            else -> Cons.Path.DATA_DIR
+        }
+
+        val path = FileUtil.getWholePath(dir,
+                TokenUtil.getUsername(request.getParameter("token")),
                 CloudFileUtil.getWholePath(filePaths))
 
         // 要下载的文件，此处以项目pom.xml文件举例说明。实际项目请根据实际业务场景获取

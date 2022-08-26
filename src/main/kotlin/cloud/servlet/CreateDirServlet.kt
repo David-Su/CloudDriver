@@ -4,7 +4,7 @@ import cloud.bean.CodeMessage
 import cloud.bean.CreateDir
 import cloud.bean.Response
 import cloud.config.Cons
-import cloud.config.FileUtil
+import cloud.util.FileUtil
 import cloud.util.CloudFileUtil
 import cloud.util.JsonUtil
 import cloud.util.TokenUtil

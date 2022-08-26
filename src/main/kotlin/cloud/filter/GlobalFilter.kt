@@ -2,6 +2,7 @@ package cloud.filter
 
 import cloud.bean.CodeMessage
 import cloud.bean.Response
+import cloud.manager.logger
 import cloud.util.TokenUtil
 import com.google.gson.Gson
 import java.io.IOException
@@ -31,10 +32,9 @@ class GlobalFilter : Filter {
 //		httpServletResponse.setHeader("Access-Control-Max-Age", "4200");  
         /* 允许跨域的请求头 */httpServletResponse.setHeader("Access-Control-Allow-Headers", "*")
         /* 是否携带cookie */httpServletResponse.setHeader("Access-Control-Allow-Credentials", "true")
-        print("""
-    doFilter:${httpServletRequest.requestURL}
-    
-    """.trimIndent())
+
+        logger.info("GlobalFilter: ${httpServletRequest.requestURL}")
+
         if (httpServletRequest.requestURI.endsWith("/login")) {
             chain.doFilter(request, response)
         } else {

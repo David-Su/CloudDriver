@@ -41,6 +41,7 @@ dependencies {
     implementation("com.auth0:java-jwt:3.19.2")
     implementation('org.bytedeco:javacv:1.4.3')
     implementation('org.bytedeco.javacpp-presets:ffmpeg-platform:4.0.2-1.4.3')
+    implementation('commons-codec:commons-codec:1.15')
 
     implementation(files(file("src/libs").listFiles()))
 //    print(file("/"))

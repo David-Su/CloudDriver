@@ -1,7 +1,6 @@
 package cloud.util
 
 import cloud.config.Cons
-import cloud.config.FileUtil
 import cloud.manager.logger
 
 object CloudFileUtil {
