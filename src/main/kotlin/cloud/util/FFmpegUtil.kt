@@ -7,6 +7,7 @@ import org.bytedeco.javacv.Java2DFrameConverter
 import java.io.File
 import java.io.IOException
 import javax.imageio.ImageIO
+import javax.jws.WebService
 
 object FFmpegUtil {
 

@@ -49,7 +49,7 @@ class GlobalFilter : Filter {
                         Response<Any?>(CodeMessage.TOKEN_TIMEOUT.code, CodeMessage.TOKEN_TIMEOUT.message, null)))
                 return
             }
-            if (!TokenUtil.vaild(token)) {
+            if (!TokenUtil.valid(token)) {
                 response.getWriter().write(gson.toJson(
                         Response<Any?>(CodeMessage.TOKEN_ILLEGAL.code, CodeMessage.TOKEN_ILLEGAL.message, null)))
                 return

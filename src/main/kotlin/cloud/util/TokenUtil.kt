@@ -3,6 +3,9 @@ package cloud.util
 import cloud.config.Cons
 import com.auth0.jwt.JWT
 import com.auth0.jwt.exceptions.JWTVerificationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.*
 
 object TokenUtil {
@@ -14,7 +17,7 @@ object TokenUtil {
                 .sign(Cons.Token.ALGORITHM)
     }
 
-    fun vaild(token: String?): Boolean {
+    fun valid(token: String?): Boolean {
         try {
             JWT.require(Cons.Token.ALGORITHM).build().verify(token)
         } catch (exception: JWTVerificationException) {
