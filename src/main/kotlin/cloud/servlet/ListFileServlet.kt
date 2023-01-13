@@ -86,8 +86,8 @@ class ListFileServlet : HttpServlet() {
 
             val previewPath = path.toMutableList()
                     .also { it.add(preview.name) }
-                    //移除username文件夹，DownloadFileServlet可以从token里面拿到
-                    .also { it.removeFirstOrNull() }
+                    //username文件夹用占位符替代，DownloadFileServlet会用username取代
+                    .also { it[0] = Cons.Path.USER_DIR_STUB }
                     .joinToString(separator = ",")
 
             logger.info("previewPath -> ${previewPath}")

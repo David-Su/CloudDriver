@@ -1,6 +1,9 @@
 package cloud.manager
 
 import cloud.bean.UploadTask
+import cloud.util.JsonUtil
+import java.util.Vector
+import java.util.concurrent.CopyOnWriteArrayList
 
 object UploadTaskManager {
 
@@ -14,46 +17,46 @@ object UploadTaskManager {
 
     fun getCurrentTasks(username: String): List<UploadTask>? = tasksMap[username]
 
-    fun addListener(username: String, listener: Listener) {
+    fun addListener(username: String, listener: Listener): Unit = synchronized(username.intern()) {
         val listeners = listenerMap[username]
-                ?: arrayListOf<Listener>().also { listenerMap[username] = it }
+                ?: ArrayList<Listener>().also { listenerMap[username] = it }
         if (!listeners.contains(listener)) listeners.add(listener)
     }
 
-    fun removeListener(username: String, listener: Listener) {
+
+    fun removeListener(username: String, listener: Listener): Unit = synchronized(username.intern()) {
         listenerMap[username]?.removeIf { it == listener }
     }
 
-    fun updateTask(username: String, uploadTask: UploadTask? = null) {
-        val tasks = tasksMap[username] ?: arrayListOf<UploadTask>().also { tasksMap[username] = it }
-
-        if (uploadTask != null) {
-            val index = tasks.indexOfFirst { uploadTask == it || it.path == uploadTask.path }.takeIf { it != -1 }
-            if (index != null) {
-                tasks.removeAt(index)
-                tasks.add(index, uploadTask)
-            } else {
-                tasks.add(uploadTask)
-            }
-        }
-
-        listenerMap[username]?.forEach { it.onTasksUpdate(tasks) }
+    fun addTask(username: String, uploadTask: UploadTask) = synchronized(username.intern()) {
+        logger.info("addTask->${uploadTask.toString()}")
+        val tasks = tasksMap[username] ?: (ArrayList<UploadTask>().also {
+            logger.info("addTask 新建list->${System.identityHashCode(it)}")
+            tasksMap[username] = it
+        })
+        tasks.add(uploadTask)
+        updateTask(username)
     }
 
-    fun removeTask(username: String, uploadTask: UploadTask? = null) {
+    fun updateTask(username: String, uploadTask: UploadTask? = null): Unit = synchronized(username.intern()) {
+
+        val tasks = tasksMap[username] ?: return@synchronized
+
+        listenerMap[username]?.forEach { it.onTasksUpdate(tasks) }
+
+        logger.info("onTasksUpdate->${tasks.map { it.toString() }}  ${System.identityHashCode(tasks)}")
+    }
+
+    fun removeTask(username: String, uploadTask: UploadTask? = null): Unit = synchronized(username.intern()) {
 
         if (uploadTask != null) {
-            tasksMap[username]?.removeIf { it == uploadTask || it.path == uploadTask.path }
-            if (tasksMap[username].isNullOrEmpty()) tasksMap.remove(username)
-
-            listenerMap[username]?.forEach { it.onTaskRemove(uploadTask.path) }
-
-        } else {
-            tasksMap[username]?.forEach { task ->
-                listenerMap[username]?.forEach { it.onTaskRemove(task.path) }
+            tasksMap[username]?.remove(uploadTask).also {
+                logger.info("removeTask->${uploadTask.toString()}  remove成功->${it}")
             }
-            tasksMap.remove(username)
+        } else {
+            tasksMap[username]?.clear()
         }
 
+        updateTask(username)
     }
 }

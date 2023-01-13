@@ -16,6 +16,10 @@ import javax.websocket.server.ServerEndpoint
 class DownloadEndPoint {
 
     companion object {
+
+        private const val KEY_DATA_TYPE = "dataType"
+        private const val KEY_DATA = "data"
+
         //更新任务上传进度
         private const val DATA_TYPE_UPDATE = 0
 
@@ -23,24 +27,25 @@ class DownloadEndPoint {
         private const val DATA_TYPE_REMOVE = 1
     }
 
-    private val webSockets = hashMapOf<String, Session>()
-
-    private var token: String? = null
-
     private var listener: UploadTaskManager.Listener? = null
+
+    private var _username: String? = null
+
+    private val username get() = _username!!
 
     @OnOpen
     fun onOpen(session: Session) {
         logger.info("onOpen  ${session.pathParameters} ${session.requestParameterMap}")
         val token = session.requestParameterMap["token"]?.getOrNull(0)
-        val username = TokenUtil.getUsername(token)
+
         if (token.isNullOrEmpty() || !TokenUtil.valid(token)) {
             session.close()
             return
         }
-        this.token = token
-        webSockets[token] = session
 
+        val username = TokenUtil.getUsername(token)
+
+        _username = username
 
         val listener = object : UploadTaskManager.Listener {
             override fun onTasksUpdate(tasks: List<UploadTask>) {
@@ -50,14 +55,16 @@ class DownloadEndPoint {
                     return
                 }
 
-                logger.info("onTasksUpdate->${JsonUtil.toJson(tasks)}")
+//                logger.info("onTasksUpdate->${JsonUtil.toJson(tasks)}")
 
-                mapOf(pair = Pair(DATA_TYPE_UPDATE, tasks))
-                        .let {
-                            JsonUtil.toJson(it)
-                        }.also {
-                            session.basicRemote.sendText(it)
-                        }
+                mapOf(
+                        Pair(KEY_DATA_TYPE, DATA_TYPE_UPDATE),
+                        Pair(KEY_DATA, tasks),
+                ).let {
+                    JsonUtil.toJson(it)
+                }.also {
+                    session.basicRemote.sendText(it)
+                }
 
             }
 
@@ -65,12 +72,14 @@ class DownloadEndPoint {
 
                 logger.info("onTaskRemove->${path}")
 
-                mapOf(pair = Pair(DATA_TYPE_REMOVE, path))
-                        .let {
-                            JsonUtil.toJson(it)
-                        }.also {
-                            session.basicRemote.sendText(it)
-                        }
+                mapOf(
+                        Pair(KEY_DATA_TYPE, DATA_TYPE_REMOVE),
+                        Pair(KEY_DATA, path),
+                ).let {
+                    JsonUtil.toJson(it)
+                }.also {
+                    session.basicRemote.sendText(it)
+                }
 
             }
 
@@ -86,8 +95,7 @@ class DownloadEndPoint {
     @OnClose
     fun onClose() {
         logger.info("onClose")
-        token?.takeIf { webSockets.containsKey(it) }?.also { webSockets.remove(it) }
-        listener?.also { UploadTaskManager.removeListener(TokenUtil.getUsername(token), it) }
+        listener?.also { UploadTaskManager.removeListener(username, it) }
     }
 
 

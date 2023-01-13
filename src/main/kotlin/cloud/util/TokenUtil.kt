@@ -13,7 +13,10 @@ object TokenUtil {
     private const val TIMEOUT = 30L * (60 * 1000)
     fun getToken(username: String?): String {
         val now = Date().time
-        return JWT.create().withClaim(Cons.Token.KEY_USERNAME, username).withExpiresAt(Date(now + TIMEOUT))
+        return JWT
+                .create()
+                .withClaim(Cons.Token.KEY_USERNAME, username)
+                .withExpiresAt(Date(now + TIMEOUT))
                 .sign(Cons.Token.ALGORITHM)
     }
 

@@ -18,8 +18,8 @@ import javax.servlet.http.HttpServletResponse
 class DeleteFileServlet : HttpServlet() {
     @Throws(ServletException::class, IOException::class)
     override fun doPost(req: HttpServletRequest, resp: HttpServletResponse) {
-        val location = CloudFileUtil.getWholePath(JsonUtil.fromJsonReader(req.reader, DeleteFile::class.java).paths)
-        val path = FileUtil.getWholePath(Cons.Path.DATA_DIR, TokenUtil.getUsername(req.getParameter("token")), location)
+        val location = CloudFileUtil.getWholePath(JsonUtil.fromJsonReader(req.reader, DeleteFile::class.java).paths, TokenUtil.getUsername(req.getParameter("token")))
+        val path = FileUtil.getWholePath(Cons.Path.DATA_DIR, location)
         logger.info("DeleteFileServlet: path->$path\n")
         val dataFile = File(path)
         //先删除预览图

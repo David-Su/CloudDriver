@@ -1,6 +1,7 @@
 package cloud.servlet
 
 import cloud.config.Cons
+import cloud.manager.logger
 import cloud.util.FileUtil
 import cloud.util.CloudFileUtil
 import cloud.util.TokenUtil
@@ -24,7 +25,7 @@ class DownloadFileServlet : HttpServlet() {
     override fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
         val filePaths = Base64.getUrlDecoder().decode(request.getParameter("filePaths")).toString(Charsets.UTF_8)
         val fileType = request.getParameter("fileType")?.toInt() ?: FILE_TYPE_DATA
-        print("filePaths->$filePaths\n")
+        logger.info("filePaths->$filePaths\n")
 
         val dir = when (fileType) {
             FILE_TYPE_TEMP_PREVIEW -> Cons.Path.TEMP_PREVIEW_DIR
@@ -32,12 +33,15 @@ class DownloadFileServlet : HttpServlet() {
         }
 
         val path = FileUtil.getWholePath(dir,
-                TokenUtil.getUsername(request.getParameter("token")),
-                CloudFileUtil.getWholePath(filePaths))
+                CloudFileUtil.getWholePath(
+                        filePaths,
+                        TokenUtil.getUsername(request.getParameter("token"))
+                )
+        )
 
         // 要下载的文件，此处以项目pom.xml文件举例说明。实际项目请根据实际业务场景获取
         val file = File(path)
-        print("DownloadFileServlet: path->$path")
+        logger.info("DownloadFileServlet: path->$path")
         //		File file = new File("C:\\Users\\admin\\Desktop\\video.mkv");
 
         // 开始下载位置

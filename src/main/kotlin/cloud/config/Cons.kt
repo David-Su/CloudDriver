@@ -9,9 +9,9 @@ class Cons {
     }
 
     object Token {
-        private const val SECRET = "jfaksdjfiaosbjxcvbnfng"
-        val ALGORITHM = Algorithm.HMAC256(SECRET)
         const val KEY_USERNAME = "key_username"
+        private const val SECRET = "jfaksdjfiaosbjxcvbnfng"
+        val ALGORITHM: Algorithm = Algorithm.HMAC256(SECRET)
     }
 
     object Path {
