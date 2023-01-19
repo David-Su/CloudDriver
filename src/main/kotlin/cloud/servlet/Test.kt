@@ -1,5 +1,6 @@
 package cloud.servlet
 
+import cloud.manager.logger
 import java.io.File
 import java.io.IOException
 import javax.servlet.ServletException
@@ -12,7 +13,7 @@ import javax.servlet.http.HttpServletResponse
 class Test : HttpServlet() {
     @Throws(ServletException::class, IOException::class)
     override fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
-        print("doGet")
+        logger.info("doGet")
 //		//3.得到执行sql的对象SqlSession 
 //		SqlSession sqlSession = MyBatisManager.getInstance().getSessionFactory().openSession();
 //		//4.执行sql语句
@@ -27,7 +28,7 @@ class Test : HttpServlet() {
 //		resp.getWriter().write(getClass().getClassLoader().getResource(".").getPath());
 
 //		System.out.print("doGet 文件大小-》"+ video.length()+"\n");
-        print("""
+        logger.info("""
     Range==${request.getHeader("Range")}
     
     """.trimIndent())

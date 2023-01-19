@@ -1,5 +1,6 @@
 package cloud.test
 
+import cloud.manager.logger
 import com.squareup.okhttp.HttpUrl
 import com.squareup.okhttp.OkHttpClient
 import com.squareup.okhttp.Request
@@ -16,6 +17,6 @@ class Baidu {
                         .addQueryParameter("redirect_uri", "oob").addQueryParameter("scope", "basic,netdisk").build())
                 .build()
         val response = client.newCall(request).execute()
-        print(response.body().string())
+        logger.info(response.body().string())
     }
 }

@@ -3,6 +3,7 @@ package cloud.servlet
 import cloud.bean.CodeMessage
 import cloud.bean.Response
 import cloud.bean.Token
+import cloud.manager.logger
 import cloud.util.TokenUtil
 import com.google.gson.Gson
 import com.google.gson.JsonObject
@@ -31,20 +32,17 @@ class LoginServlet : HttpServlet() {
         val username = body["username"].asString
         val password = body["password"].asString
         if (username != "root" || password != "root") {
-            print("账号密码错误：" + gson
+            logger.info("账号密码错误：" + gson
                     .toJson(Response<Any?>(CodeMessage.UN_OR_PW_ERROR.code, CodeMessage.UN_OR_PW_ERROR.message, null)))
             resp.writer.write(gson
                     .toJson(Response<Any?>(CodeMessage.UN_OR_PW_ERROR.code, CodeMessage.UN_OR_PW_ERROR.message, null)))
             return
         }
         val token = TokenUtil.getToken(username)
-        print("登录成功：token ->$token\n")
-        print("""
-    token解析用户名：${TokenUtil.getUsername(token)}
-    
-    """.trimIndent())
+        logger.info("用户：username->$username  password->$password")
+        logger.info("登录成功：token->$token")
         resp.writer.write(gson.toJson(Response(CodeMessage.OK.code,
                 CodeMessage.OK.message, Token(token))))
-        print("用户：username->$username  password->$password\n")
+
     }
 }
