@@ -7,7 +7,7 @@ import java.io.InputStreamReader
 
 object JsonUtil {
 
-    private val gson = Gson()
+    val gson = Gson()
 
     fun <T> fromJsonStream(input: InputStream, classOfT: Class<T>): T {
         return fromJsonReader(BufferedReader(InputStreamReader(input)), classOfT)

@@ -88,7 +88,7 @@ class ListFileServlet : HttpServlet() {
                     .also { it.add(preview.name) }
                     //username文件夹用占位符替代，DownloadFileServlet会用username取代
                     .also { it[0] = Cons.Path.USER_DIR_STUB }
-                    .joinToString(separator = ",")
+                    .let { JsonUtil.toJson(it) }
 
             logger.info("previewPath -> ${previewPath}")
 

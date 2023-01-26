@@ -4,7 +4,9 @@ import cloud.config.Cons
 import cloud.manager.logger
 import cloud.util.FileUtil
 import cloud.util.CloudFileUtil
+import cloud.util.JsonUtil
 import cloud.util.TokenUtil
+import com.google.gson.reflect.TypeToken
 import java.io.*
 import java.util.*
 import javax.servlet.ServletException
@@ -23,7 +25,14 @@ class DownloadFileServlet : HttpServlet() {
 
     @Throws(ServletException::class, IOException::class)
     override fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
-        val filePaths = Base64.getUrlDecoder().decode(request.getParameter("filePaths")).toString(Charsets.UTF_8)
+        val filePaths = Base64
+                .getUrlDecoder()
+                .decode(request.getParameter("filePaths"))
+                .toString(Charsets.UTF_8)
+                .let {
+                    logger.info("json->$it")
+                    JsonUtil.gson.fromJson<List<String>>(it, (object : TypeToken<List<String>>() {}).type)
+                }
         val fileType = request.getParameter("fileType")?.toInt() ?: FILE_TYPE_DATA
         logger.info("filePaths->$filePaths\n")
 
@@ -87,7 +96,7 @@ class DownloadFileServlet : HttpServlet() {
         response.setHeader("Content-Type", contentType)
         // Content-Disposition 表示响应内容以何种形式展示，是以内联的形式（即网页或者页面的一部分），还是以附件的形式下载并保存到本地。
         // 这里文件名换成下载后你想要的文件名，inline表示内联的形式，即：浏览器直接下载
-        response.setHeader("Content-Disposition", "attachment;filename=" + file.name)
+        response.setHeader("Content-Disposition", "attachment;filename=\"${fileName}\"")
         // Content-Length 表示资源内容长度，即：文件大小
         response.setHeader("Content-Length", contentLength.toString())
         // Content-Range 表示响应了多少数据，格式为：[要下载的开始位置]-[结束位置]/[文件总大小]
