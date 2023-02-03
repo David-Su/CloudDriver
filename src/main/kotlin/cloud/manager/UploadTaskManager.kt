@@ -1,9 +1,6 @@
 package cloud.manager
 
-import cloud.bean.UploadTask
-import cloud.util.JsonUtil
-import java.util.Vector
-import java.util.concurrent.CopyOnWriteArrayList
+import cloud.model.net.UploadTask
 
 object UploadTaskManager {
 
@@ -44,7 +41,7 @@ object UploadTaskManager {
 
         listenerMap[username]?.forEach { it.onTasksUpdate(tasks) }
 
-        logger.info("onTasksUpdate->${tasks.map { it.toString() }}  ${System.identityHashCode(tasks)}")
+//        logger.info("onTasksUpdate->${tasks.map { it.toString() }}  ${System.identityHashCode(tasks)}")
     }
 
     fun removeTask(username: String, uploadTask: UploadTask? = null): Unit = synchronized(username.intern()) {

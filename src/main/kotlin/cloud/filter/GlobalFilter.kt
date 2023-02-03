@@ -1,7 +1,7 @@
 package cloud.filter
 
-import cloud.bean.CodeMessage
-import cloud.bean.Response
+import cloud.model.net.CodeMessage
+import cloud.model.net.Response
 import cloud.manager.logger
 import cloud.util.TokenUtil
 import com.google.gson.Gson
@@ -14,11 +14,13 @@ import javax.servlet.http.HttpServletResponse
 @WebFilter(filterName = "GlobalFilter", urlPatterns = ["/*"])
 class GlobalFilter : Filter {
     private val gson = Gson()
+
     @Throws(ServletException::class)
     override fun init(filterConfig: FilterConfig) {
     }
 
     override fun destroy() {}
+
     @Throws(IOException::class, ServletException::class)
     override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
         val httpServletRequest = request as HttpServletRequest
@@ -26,14 +28,18 @@ class GlobalFilter : Filter {
         response.setCharacterEncoding("UTF-8")
         request.setCharacterEncoding("UTF-8")
 
-        /* 允许跨域的主机地址 */httpServletResponse.setHeader("Access-Control-Allow-Origin", "*")
-        /* 允许跨域的请求方法GET, POST, HEAD 等 */httpServletResponse.setHeader("Access-Control-Allow-Methods", "*")
+        /* 允许跨域的主机地址 */
+        httpServletResponse.setHeader("Access-Control-Allow-Origin", "*")
+        /* 允许跨域的请求方法GET, POST, HEAD 等 */
+        httpServletResponse.setHeader("Access-Control-Allow-Methods", "*")
         /* 重新预检验跨域的缓存时间 (s) */
 //		httpServletResponse.setHeader("Access-Control-Max-Age", "4200");  
-        /* 允许跨域的请求头 */httpServletResponse.setHeader("Access-Control-Allow-Headers", "*")
-        /* 是否携带cookie */httpServletResponse.setHeader("Access-Control-Allow-Credentials", "true")
+        /* 允许跨域的请求头 */
+        httpServletResponse.setHeader("Access-Control-Allow-Headers", "*")
+        /* 是否携带cookie */
+        httpServletResponse.setHeader("Access-Control-Allow-Credentials", "true")
 
-        logger.info("GlobalFilter: ${httpServletRequest.requestURL}")
+        logger.info("<----- ${httpServletRequest.requestURL}")
 
         if (httpServletRequest.requestURI.endsWith("/login")) {
             chain.doFilter(request, response)

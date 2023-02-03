@@ -3,15 +3,12 @@ package cloud.util
 import cloud.config.Cons
 import com.auth0.jwt.JWT
 import com.auth0.jwt.exceptions.JWTVerificationException
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import java.util.*
 
 object TokenUtil {
     // 超时间隔
     private const val TIMEOUT = 30L * (60 * 1000)
-    fun getToken(username: String?): String {
+    fun generateToken(username: String?): String {
         val now = Date().time
         return JWT
                 .create()

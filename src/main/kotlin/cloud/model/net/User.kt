@@ -1,4 +1,4 @@
-package cloud.bean
+package cloud.model.net
 
 class User {
     var username: String? = null

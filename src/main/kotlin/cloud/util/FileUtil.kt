@@ -23,20 +23,25 @@ object FileUtil {
             file.delete()
             return
         }
-        val files = file.listFiles()
-        for (i in files.indices) {
-            deleteFile(files[i])
-        }
+        file.listFiles()?.forEach { deleteFile(it) }
         file.delete()
     }
 
-    fun getRelativePath(file: File,rootFile:File):List<String>{
+    fun listFile(file: File, action: (file: File) -> Unit) {
+        if (file.isFile) {
+            action.invoke(file)
+            return
+        }
+        file.listFiles()?.forEach { listFile(it, action) }
+    }
+
+    fun getRelativePath(file: File, rootFile: File): List<String> {
         //相对路径
         val path = mutableListOf<String>()
 
         var parent = file
         while (parent != rootFile) {
-            path.add(0,parent.name)
+            path.add(0, parent.name)
             parent = parent.parentFile
         }
 

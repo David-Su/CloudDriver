@@ -1,8 +1,8 @@
 package cloud.servlet
 
-import cloud.bean.CodeMessage
-import cloud.bean.DeleteFile
-import cloud.bean.Response
+import cloud.model.net.CodeMessage
+import cloud.model.net.DeleteFile
+import cloud.model.net.Response
 import cloud.config.Cons
 import cloud.manager.logger
 import cloud.util.*
@@ -23,15 +23,18 @@ class DeleteFileServlet : HttpServlet() {
         logger.info("DeleteFileServlet: path->$path\n")
         val dataFile = File(path)
         //先删除预览图
-        PreviewFileUtil
-                .getPreviewFile(dataFile, File(Cons.Path.DATA_DIR))
-                ?.also {
-                    logger.info("DeleteFileServlet: PreviewFile->${it.absolutePath}")
-                    FileUtil.deleteFile(it)
-                }
-
+        if (dataFile.isDirectory) {
+            FileUtil.deleteFile(PreviewFileUtil.getPreviewParentFile(dataFile,File(Cons.Path.DATA_DIR)))
+        } else {
+            PreviewFileUtil
+                    .getPreviewFile(dataFile, File(Cons.Path.DATA_DIR))
+                    ?.also {
+                        logger.info("DeleteFileServlet: PreviewFile->${it.absolutePath}")
+                        FileUtil.deleteFile(it)
+                    }
+        }
+        //整个文件夹或文件删除
         FileUtil.deleteFile(dataFile)
-
 
         resp.writer.write(JsonUtil.toJson(Response<Any?>(CodeMessage.OK.code, CodeMessage.OK.message, null)))
     }

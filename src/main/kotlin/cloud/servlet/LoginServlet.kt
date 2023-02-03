@@ -1,10 +1,11 @@
 package cloud.servlet
 
-import cloud.bean.CodeMessage
-import cloud.bean.Response
-import cloud.bean.Token
+import cloud.model.net.CodeMessage
+import cloud.model.net.Response
+import cloud.model.net.Token
 import cloud.manager.logger
 import cloud.util.TokenUtil
+import com.google.common.eventbus.EventBus
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import java.io.BufferedReader
@@ -31,18 +32,21 @@ class LoginServlet : HttpServlet() {
         val body = gson.fromJson(sb.toString(), JsonObject::class.java)
         val username = body["username"].asString
         val password = body["password"].asString
-        if (username != "root" || password != "root") {
-            logger.info("账号密码错误：" + gson
-                    .toJson(Response<Any?>(CodeMessage.UN_OR_PW_ERROR.code, CodeMessage.UN_OR_PW_ERROR.message, null)))
-            resp.writer.write(gson
-                    .toJson(Response<Any?>(CodeMessage.UN_OR_PW_ERROR.code, CodeMessage.UN_OR_PW_ERROR.message, null)))
-            return
+
+        synchronized(username.intern()) {
+            if (username != "root" || password != "root") {
+                logger.info("账号密码错误：" + gson
+                        .toJson(Response<Any?>(CodeMessage.UN_OR_PW_ERROR.code, CodeMessage.UN_OR_PW_ERROR.message, null)))
+                resp.writer.write(gson
+                        .toJson(Response<Any?>(CodeMessage.UN_OR_PW_ERROR.code, CodeMessage.UN_OR_PW_ERROR.message, null)))
+                return
+            }
+            val token = TokenUtil.generateToken(username)
+            logger.info("用户：username->$username  password->$password")
+            logger.info("登录成功：token->$token")
+            resp.writer.write(gson.toJson(Response(CodeMessage.OK.code,
+                    CodeMessage.OK.message, Token(token))))
         }
-        val token = TokenUtil.getToken(username)
-        logger.info("用户：username->$username  password->$password")
-        logger.info("登录成功：token->$token")
-        resp.writer.write(gson.toJson(Response(CodeMessage.OK.code,
-                CodeMessage.OK.message, Token(token))))
 
     }
 }

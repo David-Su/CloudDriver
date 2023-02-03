@@ -1,14 +1,10 @@
 package cloud.endpoint
 
-import cloud.bean.UploadTask
+import cloud.model.net.UploadTask
 import cloud.manager.UploadTaskManager
 import cloud.manager.logger
 import cloud.util.JsonUtil
 import cloud.util.TokenUtil
-import com.google.gson.Gson
-import com.google.gson.JsonObject
-import com.google.gson.JsonParser
-import com.google.gson.stream.JsonWriter
 import javax.websocket.*
 import javax.websocket.server.ServerEndpoint
 
@@ -25,6 +21,7 @@ class DownloadEndPoint {
 
         //移除任务
         private const val DATA_TYPE_REMOVE = 1
+
     }
 
     private var listener: UploadTaskManager.Listener? = null
@@ -49,11 +46,6 @@ class DownloadEndPoint {
 
         val listener = object : UploadTaskManager.Listener {
             override fun onTasksUpdate(tasks: List<UploadTask>) {
-
-                if (!TokenUtil.valid(token)) {
-                    session.close()
-                    return
-                }
 
 //                logger.info("onTasksUpdate->${JsonUtil.toJson(tasks)}")
 

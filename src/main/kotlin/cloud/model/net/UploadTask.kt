@@ -1,4 +1,4 @@
-package cloud.bean
+package cloud.model.net
  class UploadTask(
         val path: String,
         var progress: Double,

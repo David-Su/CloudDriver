@@ -1,8 +1,6 @@
 package cloud.servlet
 
-import cloud.bean.CodeMessage
-import cloud.bean.Response
-import cloud.bean.UploadTask
+import cloud.model.net.UploadTask
 import cloud.config.Cons
 import cloud.manager.UploadTaskManager
 import cloud.manager.logger
@@ -12,17 +10,13 @@ import org.apache.commons.fileupload.FileUploadException
 import org.apache.commons.fileupload.disk.DiskFileItemFactory
 import org.apache.commons.fileupload.servlet.ServletFileUpload
 import org.apache.commons.fileupload.servlet.ServletRequestContext
-import org.apache.commons.io.FileCleaningTracker
-import org.apache.ibatis.jdbc.Null
 import java.io.File
 import java.io.IOException
-import java.io.InputStream
 import java.math.RoundingMode
 import javax.servlet.annotation.WebServlet
 import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import kotlin.time.ExperimentalTime
 
 @WebServlet("/uploadfile")
 class UploadFileServlet : HttpServlet() {
@@ -87,14 +81,14 @@ class UploadFileServlet : HttpServlet() {
 
         val upload = ServletFileUpload(factory)
 
-        upload.setProgressListener { read, ContentLength, i ->
+        upload.setProgressListener { read, contentLength, i ->
 
             currentFileItem ?: return@setProgressListener
             val localLastCalcSpeedTime = lastCalcSpeedTime
             val speed: Long
             val progress: Double
 
-            if (read == ContentLength) {
+            if (read == contentLength) {
                 speed = 0
                 progress = 1.0
             } else if (localLastCalcSpeedTime == null) {
@@ -109,7 +103,7 @@ class UploadFileServlet : HttpServlet() {
 
                 progress = read
                         .toBigDecimal()
-                        .divide(ContentLength.toBigDecimal(), 2, RoundingMode.DOWN)
+                        .divide(contentLength.toBigDecimal(), 2, RoundingMode.DOWN)
                         .toDouble()
             }
 

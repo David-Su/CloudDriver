@@ -1,4 +1,4 @@
-package cloud.bean
+package cloud.model.net
 
 data class CloudFile(
         val name: String? = null,

@@ -1,8 +1,8 @@
 package cloud.servlet
 
-import cloud.bean.CloudFile
-import cloud.bean.CodeMessage
-import cloud.bean.Response
+import cloud.model.net.CloudFile
+import cloud.model.net.CodeMessage
+import cloud.model.net.Response
 import cloud.config.Cons
 import cloud.util.FileUtil
 import cloud.manager.logger
@@ -41,6 +41,7 @@ class ListFileServlet : HttpServlet() {
                 null
         )
         val writer: Writer = resp.writer
+
         writer.write(
                 JsonUtil.toJson(Response(CodeMessage.OK.code, CodeMessage.OK.message, cloudFile)))
     }

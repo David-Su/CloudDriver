@@ -1,8 +1,8 @@
 package cloud.servlet
 
-import cloud.bean.CodeMessage
-import cloud.bean.CreateDir
-import cloud.bean.Response
+import cloud.model.net.CodeMessage
+import cloud.model.net.CreateDir
+import cloud.model.net.Response
 import cloud.config.Cons
 import cloud.manager.logger
 import cloud.util.FileUtil
@@ -25,9 +25,19 @@ class CreateDirServlet : HttpServlet() {
         val paths = CloudFileUtil.getWholePath(JsonUtil.fromJsonReader(req.reader, CreateDir::class.java).paths, TokenUtil.getUsername(req.getParameter("token")))
 
         val path = FileUtil.getWholePath(Cons.Path.DATA_DIR, paths)
-        val result = File(path).mkdirs()
-        logger.info("CreateDirServlet: path->$path result->$result")
 
-        resp.writer.write(JsonUtil.toJson(if (result) Response<Any?>(CodeMessage.OK.code, CodeMessage.OK.message, null) else Response<Void?>(CodeMessage.CREATE_DIR_FAIL.code, CodeMessage.CREATE_DIR_FAIL.message, null)))
+        val file = File(path)
+
+        val response = if (file.exists()) {
+            Response<Any?>(CodeMessage.DIR_ALREADY_EXIST.code, CodeMessage.DIR_ALREADY_EXIST.message, null)
+        } else if (file.mkdirs()) {
+            Response<Any?>(CodeMessage.OK.code, CodeMessage.OK.message, null)
+        } else {
+            Response<Void?>(CodeMessage.CREATE_DIR_FAIL.code, CodeMessage.CREATE_DIR_FAIL.message, null)
+        }
+
+        logger.info("file:${file}")
+
+        resp.writer.write(JsonUtil.toJson(response))
     }
 }
