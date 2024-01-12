@@ -5,8 +5,12 @@ import cloud.manager.UploadTaskManager
 import cloud.manager.logger
 import cloud.util.JsonUtil
 import cloud.util.TokenUtil
+import java.util.Timer
 import javax.websocket.*
 import javax.websocket.server.ServerEndpoint
+import kotlin.concurrent.schedule
+import kotlin.concurrent.timer
+import kotlin.concurrent.timerTask
 
 @ServerEndpoint("/websocket/uploadtasks")
 class DownloadEndPoint {
@@ -29,6 +33,8 @@ class DownloadEndPoint {
     private var _username: String? = null
 
     private val username get() = _username!!
+
+    private val debugTimer = Timer()
 
     @OnOpen
     fun onOpen(session: Session) {
@@ -81,13 +87,23 @@ class DownloadEndPoint {
         UploadTaskManager.getCurrentTasks(username)?.also { listener.onTasksUpdate(it) }
         UploadTaskManager.addListener(username, listener)
         this.listener = listener
+
+        debugTimer.schedule(timerTask {
+            logger.info {
+                val tasks = UploadTaskManager.getCurrentTasks(username)
+                "定时获取任务信息：${tasks}"
+            }
+        }, 10 * 1000, 10 * 1000)
     }
 
 
     @OnClose
     fun onClose() {
+
+
         logger.info("onClose")
         listener?.also { UploadTaskManager.removeListener(username, it) }
+        debugTimer.cancel()
     }
 
 

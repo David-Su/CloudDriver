@@ -1,13 +1,11 @@
 package cloud.util
 
 import cloud.manager.logger
-import cloud.test.Video
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import org.bytedeco.javacv.Java2DFrameConverter
 import java.io.File
 import java.io.IOException
 import javax.imageio.ImageIO
-import javax.jws.WebService
 
 object FFmpegUtil {
 
