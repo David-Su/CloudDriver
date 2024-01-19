@@ -31,7 +31,7 @@ object FFmpegUtil {
             e.printStackTrace()
         }
 
-        logger.info("关闭grabber")
+        logger.info { "关闭grabber" }
         grabber.close()
 
         return outPutFile.exists()

@@ -27,8 +27,8 @@ class RenameFileServlet : HttpServlet() {
         val sourceFile = File(FileUtil.getWholePath(Cons.Path.DATA_DIR, paths))
         val newFile = File(FileUtil.getWholePath(Cons.Path.DATA_DIR, newPaths))
 
-        logger.info("sourceFile->$sourceFile")
-        logger.info("newFile->$newFile")
+        logger.info { "sourceFile:$sourceFile" }
+        logger.info { "newFile:$newFile" }
 
         if (!sourceFile.exists() || newFile.exists()) {
             resp.writer.write(JsonUtil.toJson(Response<Any?>(CodeMessage.DIR_OR_FILE_ALREADY_EXIST.code, CodeMessage.DIR_OR_FILE_ALREADY_EXIST.message, null)))
@@ -36,7 +36,7 @@ class RenameFileServlet : HttpServlet() {
         }
 
         val sourcePreviewFile: File? = if (sourceFile.isFile) PreviewFileUtil.getPreviewFile(sourceFile, File(Cons.Path.DATA_DIR)) else PreviewFileUtil.getPreviewParentFile(sourceFile, File(Cons.Path.DATA_DIR))
-        logger.info("sourcePreviewFile->$sourcePreviewFile")
+        logger.info { "sourcePreviewFile:$sourcePreviewFile" }
 
         if (!sourceFile.renameTo(newFile)) {
             resp.writer.write(JsonUtil.toJson(Response<Any?>(CodeMessage.RENAME_FILE_FAIL.code, CodeMessage.RENAME_FILE_FAIL.message, null)))
@@ -65,7 +65,18 @@ class RenameFileServlet : HttpServlet() {
 
                 val result = sourcePreviewFile.renameTo(newPreviewFile)
 
-                logger.info("sourcePreviewFile1:${sourcePreviewFile} -> newPreviewFile:${newPreviewFile} -> result:${result}")
+                logger.info {
+                    buildString {
+                        append("\n")
+                        append("sourceFile是文件")
+                        append("\n")
+                        append("sourcePreviewFile:${sourcePreviewFile}")
+                        append("\n")
+                        append("newPreviewFile:${newPreviewFile}")
+                        append("\n")
+                        append("result:${result}")
+                    }
+                }
             } else if (sourcePreviewFile.isDirectory) { //sourceFile是文件夹的情况
                 if (newPreviewFileParent.exists()) {
                     FileUtil.deleteFile(newPreviewFileParent)
@@ -75,7 +86,18 @@ class RenameFileServlet : HttpServlet() {
 
                 val result = sourcePreviewFile.renameTo(newPreviewFileParent)
 
-                logger.info("sourcePreviewFile2:${sourcePreviewFile} -> newPreviewFileParent:${newPreviewFileParent} -> result:${result}")
+                logger.info {
+                    buildString {
+                        append("\n")
+                        append("sourceFile是文件夹")
+                        append("\n")
+                        append("sourcePreviewFile:${sourcePreviewFile}")
+                        append("\n")
+                        append("newPreviewFileParent:${newPreviewFileParent}")
+                        append("\n")
+                        append("result:${result}")
+                    }
+                }
             }
 
         }

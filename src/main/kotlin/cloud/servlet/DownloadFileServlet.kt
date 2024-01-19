@@ -30,11 +30,15 @@ class DownloadFileServlet : HttpServlet() {
                 .decode(request.getParameter("filePaths"))
                 .toString(Charsets.UTF_8)
                 .let {
-                    logger.info("json->$it")
+                    logger.info {
+                        "filePaths json:$it"
+                    }
                     JsonUtil.gson.fromJson<List<String>>(it, (object : TypeToken<List<String>>() {}).type)
                 }
         val fileType = request.getParameter("fileType")?.toInt() ?: FILE_TYPE_DATA
-        logger.info("filePaths->$filePaths\n")
+        logger.info {
+            "filePaths:$filePaths"
+        }
 
         val dir = when (fileType) {
             FILE_TYPE_TEMP_PREVIEW -> Cons.Path.TEMP_PREVIEW_DIR
@@ -50,8 +54,10 @@ class DownloadFileServlet : HttpServlet() {
 
         // 要下载的文件，此处以项目pom.xml文件举例说明。实际项目请根据实际业务场景获取
         val file = File(path)
-        logger.info("DownloadFileServlet: path->$path")
-        //		File file = new File("C:\\Users\\admin\\Desktop\\video.mkv");
+
+        logger.info {
+            "path:$path"
+        }
 
         // 开始下载位置
         var startByte: Long = 0

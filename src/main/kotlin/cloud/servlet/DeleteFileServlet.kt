@@ -20,16 +20,20 @@ class DeleteFileServlet : HttpServlet() {
     override fun doPost(req: HttpServletRequest, resp: HttpServletResponse) {
         val location = CloudFileUtil.getWholePath(JsonUtil.fromJsonReader(req.reader, DeleteFile::class.java).paths, TokenUtil.getUsername(req.getParameter("token")))
         val path = FileUtil.getWholePath(Cons.Path.DATA_DIR, location)
-        logger.info("DeleteFileServlet: path->$path\n")
+        logger.info {
+            "path:$path"
+        }
         val dataFile = File(path)
         //先删除预览图
         if (dataFile.isDirectory) {
-            FileUtil.deleteFile(PreviewFileUtil.getPreviewParentFile(dataFile,File(Cons.Path.DATA_DIR)))
+            FileUtil.deleteFile(PreviewFileUtil.getPreviewParentFile(dataFile, File(Cons.Path.DATA_DIR)))
         } else {
             PreviewFileUtil
                     .getPreviewFile(dataFile, File(Cons.Path.DATA_DIR))
                     ?.also {
-                        logger.info("DeleteFileServlet: PreviewFile->${it.absolutePath}")
+                        logger.info {
+                            "PreviewFile:${it.absolutePath}"
+                        }
                         FileUtil.deleteFile(it)
                     }
         }

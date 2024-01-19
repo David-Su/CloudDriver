@@ -73,9 +73,17 @@ class UploadFileServlet : HttpServlet() {
                 }
             }
         }
-        logger.info("path->$path")
-        logger.info("realDir->$realDir")
-        logger.info("tempDir->$tempDir")
+
+        logger.info {
+            buildString {
+                append("\n")
+                append("path->$path")
+                append("\n")
+                append("realDir->$realDir")
+                append("\n")
+                append("tempDir->$tempDir")
+            }
+        }
 
         factory.repository = File(tempDir)
 

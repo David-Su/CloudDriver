@@ -11,7 +11,7 @@ object PreviewFileUtil {
 
         if (file.isFile) {
             preview = getPreviewParentFile(file, rootFile)
-                    .also { logger.info("previewParent -> $it") }
+                    .also { logger.info { "previewParent -> $it" } }
                     .listFiles()
                     ?.find { it.name.substringBeforeLast(".") == file.name.substringBeforeLast(".") }
                     ?: return null

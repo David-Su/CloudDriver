@@ -26,12 +26,13 @@ object UploadTaskManager {
     }
 
     fun addTask(username: String, uploadTask: UploadTask) = synchronized(username.intern()) {
-        logger.info("addTask->${uploadTask.toString()}")
+        logger.info { "新任务：${uploadTask}" }
         val tasks = tasksMap[username] ?: (ArrayList<UploadTask>().also {
-            logger.info("addTask 新建list->${System.identityHashCode(it)}")
+            logger.info { "新建任务队列：${it}" }
             tasksMap[username] = it
         })
         tasks.add(uploadTask)
+        logger.info { "插入任务队列：${tasks}" }
         updateTask(username)
     }
 
@@ -47,9 +48,19 @@ object UploadTaskManager {
     fun removeTask(username: String, uploadTask: UploadTask? = null): Unit = synchronized(username.intern()) {
 
         if (uploadTask != null) {
-            tasksMap[username]?.remove(uploadTask).also {
-                logger.info("removeTask->${uploadTask.toString()}  remove成功->${it}")
+            val tasks = tasksMap[username]
+            if (tasks == null) {
+                logger.info {
+                    "任务队列为空"
+                }
+            } else {
+                tasks.remove(uploadTask).also {
+                    logger.info {
+                        "移除${uploadTask}${if (it) "成功" else "失败"}"
+                    }
+                }
             }
+
         } else {
             tasksMap[username]?.clear()
         }

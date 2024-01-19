@@ -1,7 +1,9 @@
 package cloud.config
 
+import cloud.manager.logger
 import cloud.util.FileUtil
 import com.auth0.jwt.algorithms.Algorithm
+import java.io.File
 
 class Cons {
     object Env {
@@ -15,7 +17,24 @@ class Cons {
     }
 
     object Path {
-        private val ROOT_DIR = FileUtil.getWholePath(System.getProperty("user.home"), "CloudDriver")
+        init {
+            logger.info {
+                "当前系统：${System.getProperty("os.name")}"
+            }
+        }
+
+        //顶层文件夹
+        private val TOP_DIR = System.getProperty("os.name")
+                ?.let { os ->
+                    when {
+                        os.contains("Linux") -> File("${File.separator}mnt${File.separator}sdb")
+                                .takeIf { it.exists() }
+                                ?.absolutePath
+
+                        else -> null
+                    }
+                } ?: System.getProperty("user.home")
+        private val ROOT_DIR = FileUtil.getWholePath(TOP_DIR, "CloudDriver")
         private val TEMP_DIR = FileUtil.getWholePath(ROOT_DIR, "temp")
         val DATA_DIR = FileUtil.getWholePath(ROOT_DIR, "data")
         val TEMP_UPLOAD_DIR = FileUtil.getWholePath(TEMP_DIR, "upload")

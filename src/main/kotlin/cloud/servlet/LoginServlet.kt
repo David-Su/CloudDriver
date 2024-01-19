@@ -35,15 +35,21 @@ class LoginServlet : HttpServlet() {
 
         synchronized(username.intern()) {
             if (username != "root" || password != "root") {
-                logger.info("账号密码错误：" + gson
-                        .toJson(Response<Any?>(CodeMessage.UN_OR_PW_ERROR.code, CodeMessage.UN_OR_PW_ERROR.message, null)))
                 resp.writer.write(gson
                         .toJson(Response<Any?>(CodeMessage.UN_OR_PW_ERROR.code, CodeMessage.UN_OR_PW_ERROR.message, null)))
                 return
             }
             val token = TokenUtil.generateToken(username)
-            logger.info("用户：username->$username  password->$password")
-            logger.info("登录成功：token->$token")
+            logger.info {
+                buildString {
+                    append("\n")
+                    append("username->$username")
+                    append("\n")
+                    append("password->$password")
+                    append("\n")
+                    append("token->$token")
+                }
+            }
             resp.writer.write(gson.toJson(Response(CodeMessage.OK.code,
                     CodeMessage.OK.message, Token(token))))
         }

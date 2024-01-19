@@ -6,6 +6,7 @@ import cloud.manager.logger
 import cloud.util.TokenUtil
 import com.google.gson.Gson
 import java.io.IOException
+import java.nio.charset.Charset
 import javax.servlet.*
 import javax.servlet.annotation.WebFilter
 import javax.servlet.http.HttpServletRequest
@@ -25,8 +26,9 @@ class GlobalFilter : Filter {
     override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
         val httpServletRequest = request as HttpServletRequest
         val httpServletResponse = response as HttpServletResponse
-        response.setCharacterEncoding("UTF-8")
         request.setCharacterEncoding("UTF-8")
+        response.setCharacterEncoding("UTF-8")
+        response.setContentType("application/json; charset=utf-8")
 
         /* 允许跨域的主机地址 */
         httpServletResponse.setHeader("Access-Control-Allow-Origin", "*")
@@ -39,7 +41,7 @@ class GlobalFilter : Filter {
         /* 是否携带cookie */
         httpServletResponse.setHeader("Access-Control-Allow-Credentials", "true")
 
-        logger.info("<----- ${httpServletRequest.requestURL}")
+        logger.info { "<----- ${httpServletRequest.requestURL}" }
 
         if (httpServletRequest.requestURI.endsWith("/login")) {
             chain.doFilter(request, response)

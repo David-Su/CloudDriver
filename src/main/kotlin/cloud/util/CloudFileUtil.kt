@@ -18,7 +18,7 @@ object CloudFileUtil {
                         }
                     } else it
                 }.let {
-                    logger.info("getWholePath:${it}")
+                    logger.info { "getWholePath:${it}" }
                     FileUtil.getWholePath(it)
                 }
     }

@@ -8,9 +8,11 @@ import cloud.util.FileUtil
 import cloud.manager.logger
 import cloud.util.JsonUtil
 import cloud.util.TokenUtil
+import java.io.BufferedWriter
 import java.io.File
 import java.io.IOException
 import java.io.Writer
+import java.nio.charset.Charset
 import java.util.*
 import javax.servlet.ServletException
 import javax.servlet.annotation.WebServlet
@@ -29,8 +31,9 @@ class ListFileServlet : HttpServlet() {
             userDir.mkdirs()
         }
 
-        logger.info("userDir->$userDir\n")
-//        print("userDir->$userDir\n")
+        logger.info {
+            "userDir->$userDir"
+        }
 
 //		FileUtil.deleteFile(new File(path));
         val cloudFile = CloudFile(
@@ -40,6 +43,11 @@ class ListFileServlet : HttpServlet() {
                 getFileLength(userDir),
                 null
         )
+
+        logger.info {
+            "cloudFile->$cloudFile"
+        }
+
         val writer: Writer = resp.writer
 
         writer.write(
@@ -78,7 +86,9 @@ class ListFileServlet : HttpServlet() {
 
             val previewParentPath = FileUtil.getWholePath(Cons.Path.TEMP_PREVIEW_DIR, FileUtil.getWholePath(path))
 
-            logger.info("previewParentPath -> ${previewParentPath}")
+            logger.info {
+                "previewParentPath:${previewParentPath}"
+            }
 
             val preview = File(previewParentPath)
                     .listFiles()
@@ -91,7 +101,9 @@ class ListFileServlet : HttpServlet() {
                     .also { it[0] = Cons.Path.USER_DIR_STUB }
                     .let { JsonUtil.toJson(it) }
 
-            logger.info("previewPath -> ${previewPath}")
+            logger.info {
+                "previewPath:${previewPath}"
+            }
 
             imgUrl = "/downloadfile?fileType=2&filePaths=${Base64.getUrlEncoder().encodeToString(previewPath.toByteArray())}"
         }

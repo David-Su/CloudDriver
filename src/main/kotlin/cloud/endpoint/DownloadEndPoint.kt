@@ -38,7 +38,9 @@ class DownloadEndPoint {
 
     @OnOpen
     fun onOpen(session: Session) {
-        logger.info("onOpen  ${session.pathParameters} ${session.requestParameterMap}")
+        logger.info {
+            "${session.pathParameters} ${session.requestParameterMap}"
+        }
         val token = session.requestParameterMap["token"]?.getOrNull(0)
 
         if (token.isNullOrEmpty() || !TokenUtil.valid(token)) {
@@ -68,7 +70,7 @@ class DownloadEndPoint {
 
             override fun onTaskRemove(path: String) {
 
-                logger.info("onTaskRemove->${path}")
+                logger.info { path }
 
                 mapOf(
                         Pair(KEY_DATA_TYPE, DATA_TYPE_REMOVE),
@@ -99,9 +101,7 @@ class DownloadEndPoint {
 
     @OnClose
     fun onClose() {
-
-
-        logger.info("onClose")
+        logger.info { "" }
         listener?.also { UploadTaskManager.removeListener(username, it) }
         debugTimer.cancel()
     }
@@ -109,12 +109,12 @@ class DownloadEndPoint {
 
     @OnMessage
     fun onMessage(message: String, session: Session) {
-        logger.info("来自客户端的消息:$message")
+        logger.info { message }
     }
 
     @OnError
     fun onError(session: Session?, error: Throwable) {
-        logger.info("websocket发生错误：$error")
+        logger.info { error.message }
     }
 
 }

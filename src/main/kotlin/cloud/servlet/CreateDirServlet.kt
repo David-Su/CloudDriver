@@ -36,7 +36,9 @@ class CreateDirServlet : HttpServlet() {
             Response<Void?>(CodeMessage.CREATE_DIR_FAIL.code, CodeMessage.CREATE_DIR_FAIL.message, null)
         }
 
-        logger.info("file:${file}")
+        logger.info {
+            "file:${file}"
+        }
 
         resp.writer.write(JsonUtil.toJson(response))
     }
