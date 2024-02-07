@@ -56,14 +56,15 @@ class ListFileServlet : HttpServlet() {
 
     private fun generateCloudFile(file: File, rootFile: File): List<CloudFile>? {
         val children = file.listFiles()
-        if (children.isEmpty()) return null
+        if (children.isNullOrEmpty()) return null
         val cloudFiles: MutableList<CloudFile> = ArrayList()
         for (i in children.indices) {
             val child = children[i]
+            val isDir = child.isDirectory
             val cloudFile = CloudFile(
                     child.name,
-                    child.isDirectory,
-                    if (child.isDirectory) generateCloudFile(child, rootFile) else null,
+                    isDir,
+                    if (isDir) generateCloudFile(child, rootFile) else null,
                     getFileLength(child),
                     assemblePreviewImg(child, rootFile)
             )
