@@ -1,7 +1,6 @@
 package cloud.test
 
 import it.sauronsoftware.jave.Encoder
-import org.bytedeco.javacpp.opencv_videoio.*
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import org.bytedeco.javacv.Frame
 import org.bytedeco.javacv.Java2DFrameConverter

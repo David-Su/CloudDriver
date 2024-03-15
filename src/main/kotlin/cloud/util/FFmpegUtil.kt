@@ -10,11 +10,21 @@ import javax.imageio.ImageIO
 object FFmpegUtil {
 
     fun extraMiddleFrameImg(videoPath: String, outPutPath: String): Boolean {
-        val grabber: FFmpegFrameGrabber = FFmpegFrameGrabber.createDefault(videoPath)
-        grabber.start()
-        //设置当前帧数为中间位置
-        grabber.setVideoFrameNumber(grabber.lengthInFrames / 2)
+        val grabber: FFmpegFrameGrabber = try {
+            FFmpegFrameGrabber.createDefault(videoPath)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return false
+        }
 
+        try {
+            grabber.start()
+            //设置当前帧数为中间位置
+            grabber.setVideoFrameNumber(grabber.lengthInFrames / 2)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return false
+        }
 
         val outPutFile = File(outPutPath)
 
