@@ -36,32 +36,6 @@ class UploadFileServlet : HttpServlet() {
         val realDir = FileUtil.getWholePath(Cons.Path.DATA_DIR, path)
         val tempDir = FileUtil.getWholePath(Cons.Path.TEMP_UPLOAD_DIR,path)
 
-//        val currentTask = UploadTaskManager.getCurrentTasks(username)
-//
-//        val clientFiles = mutableSetOf<String>()
-//
-//
-//        ServletFileUpload().getItemIterator(object :ServletRequestContext(request) {
-//            override fun getInputStream(): InputStream {
-//                return super.getInputStream()
-//            }
-//        }).also {
-//            while (it.hasNext()) clientFiles.add(FileUtil.getWholePath(clientPath, it.next().name))
-//        }
-//
-//        logger.info("进行中的任务路径 -> ${currentTask?.map { it.path }} 即将上传的任务路径 -> ${clientFiles}")
-//
-//        //禁止相同路径同名文件重复上传
-//        if (currentTask?.map { it.path }?.intersect(clientFiles)?.isNotEmpty() == true) {
-//            resp.writer.write(
-//                    JsonUtil.toJson(
-//                            Response<Any?>(CodeMessage.CREATE_DIR_FAIL.code, CodeMessage.CREATE_DIR_FAIL.message, null)
-//                    )
-//            )
-//            return
-//        }
-
-
         val factory = object : DiskFileItemFactory() {
             override fun createItem(fieldName: String?, contentType: String?, isFormField: Boolean, fileName: String?): FileItem {
                 return super.createItem(fieldName, contentType, isFormField, fileName).also {
