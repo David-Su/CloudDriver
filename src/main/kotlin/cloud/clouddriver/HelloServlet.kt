@@ -1,7 +1,7 @@
 package cloud.clouddriver
 
-import javax.servlet.http.*
-import javax.servlet.annotation.*
+import jakarta.servlet.http.*
+import jakarta.servlet.annotation.*
 
 @WebServlet(name = "helloServlet", value = ["/hello-servlet"])
 class HelloServlet : HttpServlet() {

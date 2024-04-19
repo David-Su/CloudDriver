@@ -5,11 +5,9 @@ import cloud.manager.UploadTaskManager
 import cloud.manager.logger
 import cloud.util.JsonUtil
 import cloud.util.TokenUtil
+import jakarta.websocket.*
+import jakarta.websocket.server.ServerEndpoint
 import java.util.Timer
-import javax.websocket.*
-import javax.websocket.server.ServerEndpoint
-import kotlin.concurrent.schedule
-import kotlin.concurrent.timer
 import kotlin.concurrent.timerTask
 
 @ServerEndpoint("/websocket/uploadtasks")

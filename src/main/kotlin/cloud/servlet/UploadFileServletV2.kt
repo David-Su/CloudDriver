@@ -6,21 +6,17 @@ import cloud.manager.UploadTaskManager
 import cloud.manager.logger
 import cloud.util.*
 import com.google.common.io.Files
-import org.apache.commons.fileupload.FileItem
-import org.apache.commons.fileupload.FileUploadException
-import org.apache.commons.fileupload.disk.DiskFileItemFactory
-import org.apache.commons.fileupload.servlet.ServletFileUpload
-import org.apache.commons.fileupload.servlet.ServletRequestContext
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.math.RoundingMode
-import javax.servlet.annotation.MultipartConfig
-import javax.servlet.annotation.WebServlet
-import javax.servlet.http.HttpServlet
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
+import jakarta.servlet.annotation.MultipartConfig
+import jakarta.servlet.annotation.WebServlet
+import jakarta.servlet.http.HttpServlet
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
+import org.apache.commons.fileupload2.core.FileUploadException
 
 @WebServlet("/uploadfilev2")
 @MultipartConfig
