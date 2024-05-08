@@ -17,28 +17,28 @@ class Cons {
     }
 
     object Path {
-        init {
-            logger.info {
-                "当前系统：${System.getProperty("os.name")}"
-            }
-        }
-
         //顶层文件夹
         private val TOP_DIR = System.getProperty("os.name")
-                ?.let { os ->
-                    when {
-                        os.contains("Linux") -> File("${File.separator}mnt${File.separator}sdb")
-                                .takeIf { it.exists() }
-                                ?.absolutePath
+            ?.let { os ->
+                when {
+                    os.contains("Linux") -> File("${File.separator}mnt${File.separator}sdb")
+                        .takeIf { it.exists() }
+                        ?.absolutePath
 
-                        else -> null
-                    }
-                } ?: System.getProperty("user.home")
+                    else -> null
+                }
+            } ?: System.getProperty("user.home")
         private val ROOT_DIR = FileUtil.getWholePath(TOP_DIR, "CloudDriver")
         private val TEMP_DIR = FileUtil.getWholePath(ROOT_DIR, "temp")
         val DATA_DIR = FileUtil.getWholePath(ROOT_DIR, "data")
         val TEMP_UPLOAD_DIR = FileUtil.getWholePath(TEMP_DIR, "upload")
         val TEMP_PREVIEW_DIR = FileUtil.getWholePath(TEMP_DIR, "preview")
         const val USER_DIR_STUB = "." //用户目录占位符
+
+        init {
+            logger.info { "当前系统：${System.getProperty("os.name")}" }
+            logger.info { "ROOT_DIR: $ROOT_DIR" }
+            logger.info { "TEMP_DIR: $TEMP_DIR" }
+        }
     }
 }
