@@ -20,13 +20,24 @@ import java.util.*
 class OpenDirServlet : HttpServlet() {
 
     override fun doPost(req: HttpServletRequest, resp: HttpServletResponse) {
-        val path = TokenUtil.getUsername(req.getParameter("token"))
-            .let { CloudFileUtil.getWholePath(JsonUtil.fromJsonReader(req.reader, OpenDir::class.java).paths, it) }
+
+        val userName = TokenUtil.getUsername(req.getParameter("token"))
+        val paths = JsonUtil.fromJsonReader(req.reader, OpenDir::class.java).paths
+        val writer: Writer = resp.writer
+
+        if (paths.isEmpty() || paths.firstOrNull() != Cons.Path.USER_DIR_STUB) {
+            Response<Unit>(CodeMessage.DIR_OR_FILE_NOT_EXIST.code, CodeMessage.DIR_OR_FILE_NOT_EXIST.message)
+                .let { JsonUtil.toJson(it) }
+                .also { writer.write(it) }
+            return
+        }
+
+        val targetDirPath = userName
+            .let { CloudFileUtil.getWholePath(paths, it) }
             .let { FileUtil.getWholePath(Cons.Path.DATA_DIR, it) }
 
-        val targetDirFile = File(path)
+        val targetDirFile = File(targetDirPath)
 
-        val writer: Writer = resp.writer
 
         if (!targetDirFile.exists() || !targetDirFile.isDirectory) {
             Response<Unit>(CodeMessage.DIR_OR_FILE_NOT_EXIST.code, CodeMessage.DIR_OR_FILE_NOT_EXIST.message)
@@ -44,7 +55,15 @@ class OpenDirServlet : HttpServlet() {
                 )
             }
 
-        val dirCloudFile = DirCloudFile(targetDirFile.name, children)
+        val userDir = File(FileUtil.getWholePath(Cons.Path.DATA_DIR, userName))
+
+        val dirCloudFileName = if (targetDirFile == userDir) {
+            Cons.Path.USER_DIR_STUB
+        } else {
+            targetDirFile.name
+        }
+
+        val dirCloudFile = DirCloudFile(dirCloudFileName, children)
 
         Response(CodeMessage.OK.code, CodeMessage.OK.message, dirCloudFile)
             .let { JsonUtil.toJson(it) }

@@ -10,6 +10,7 @@ import java.io.File
 import jakarta.servlet.ServletContextEvent
 import jakarta.servlet.ServletContextListener
 import jakarta.servlet.annotation.WebListener
+import java.time.Duration
 
 @WebListener
 class GlobalListener : ServletContextListener {
@@ -17,6 +18,8 @@ class GlobalListener : ServletContextListener {
     private val context = SupervisorJob() + Dispatchers.Default
 
     override fun contextInitialized(sce: ServletContextEvent?): Unit = runBlocking(context = context) {
+
+        val startTime = System.currentTimeMillis()
 
         sce ?: return@runBlocking
         val userDir = File(Cons.Path.DATA_DIR)
@@ -58,6 +61,7 @@ class GlobalListener : ServletContextListener {
                 }
             }
 
+        logger.info { "全局初始化耗时:${System.currentTimeMillis() - startTime}" }
 
     }
 
