@@ -1,3 +1,3 @@
 package cloud.model.net
 
-class Response<T>(var code: String, var message: String, var result: T)
+data class Response<T>(val code: String, val message: String, val result: T? = null)

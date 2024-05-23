@@ -8,6 +8,7 @@ enum class CodeMessage(var code: String, var message: String) {
     CREATE_DIR_FAIL("0004", "创建文件夹目录失败"),
     DUPLICATE_UPLOAD_TASK("0005", "请勿重复上传"),
     DIR_ALREADY_EXIST("0006", "文件夹目录已存在"),
-    DIR_OR_FILE_ALREADY_EXIST("0007", "文件或目录已存在已存在"),
+    DIR_OR_FILE_ALREADY_EXIST("0007", "文件或目录已存在"),
     RENAME_FILE_FAIL("0008", "文件或目录改名失败"),
+    DIR_OR_FILE_NOT_EXIST("0008", "文件或目录不存在"),
 }
