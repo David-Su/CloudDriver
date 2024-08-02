@@ -7,14 +7,14 @@ import java.util.*
 
 object TokenUtil {
     // 超时间隔
-    private const val TIMEOUT = 30L * (60 * 1000)
+    private const val TIMEOUT = 24 * (60L * (60 * 1000))
     fun generateToken(username: String?): String {
         val now = Date().time
         return JWT
-                .create()
-                .withClaim(Cons.Token.KEY_USERNAME, username)
-                .withExpiresAt(Date(now + TIMEOUT))
-                .sign(Cons.Token.ALGORITHM)
+            .create()
+            .withClaim(Cons.Token.KEY_USERNAME, username)
+            .withExpiresAt(Date(now + TIMEOUT))
+            .sign(Cons.Token.ALGORITHM)
     }
 
     fun valid(token: String?): Boolean {
