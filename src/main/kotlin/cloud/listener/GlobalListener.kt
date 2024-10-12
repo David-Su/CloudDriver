@@ -28,7 +28,7 @@ class GlobalListener : ServletContextListener {
         }
 
         userDir.walkTopDown()
-            .forEach { file ->
+            .map { file ->
                 async {
                     val mediaType = sce.servletContext
                         .getMimeType(file.name)
@@ -60,6 +60,8 @@ class GlobalListener : ServletContextListener {
                     }
                 }
             }
+            .toList()
+            .awaitAll()
 
         logger.info { "全局初始化耗时:${System.currentTimeMillis() - startTime}" }
 
