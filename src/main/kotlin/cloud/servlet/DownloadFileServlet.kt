@@ -21,21 +21,26 @@ class DownloadFileServlet : HttpServlet() {
     companion object {
         const val FILE_TYPE_DATA = 1
         const val FILE_TYPE_TEMP_PREVIEW = 2
+
+        //下载模式
+        const val DOWNLOAD_MODE_DOWNLOAD = 1
+        const val DOWNLOAD_MODE_PLAY_ONLINE = 2
     }
 
     @Throws(ServletException::class, IOException::class)
     override fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
         val filePaths = Base64
-                .getUrlDecoder()
-                .decode(request.getParameter("filePaths"))
-                .toString(Charsets.UTF_8)
-                .let {
-                    logger.info {
-                        "filePaths json:$it"
-                    }
-                    JsonUtil.gson.fromJson<List<String>>(it, (object : TypeToken<List<String>>() {}).type)
+            .getUrlDecoder()
+            .decode(request.getParameter("filePaths"))
+            .toString(Charsets.UTF_8)
+            .let {
+                logger.info {
+                    "filePaths json:$it"
                 }
+                JsonUtil.gson.fromJson<List<String>>(it, (object : TypeToken<List<String>>() {}).type)
+            }
         val fileType = request.getParameter("fileType")?.toInt() ?: FILE_TYPE_DATA
+        val downloadMode = request.getParameter("downloadMode")?.toInt() ?: DOWNLOAD_MODE_DOWNLOAD
         logger.info {
             "filePaths:$filePaths"
         }
@@ -45,11 +50,12 @@ class DownloadFileServlet : HttpServlet() {
             else -> Cons.Path.DATA_DIR
         }
 
-        val path = FileUtil.getWholePath(dir,
-                CloudFileUtil.getWholePath(
-                        filePaths,
-                        TokenUtil.getUsername(request.getParameter("token"))
-                )
+        val path = FileUtil.getWholePath(
+            dir,
+            CloudFileUtil.getWholePath(
+                filePaths,
+                TokenUtil.getUsername(request.getParameter("token"))
+            )
         )
 
         // 要下载的文件，此处以项目pom.xml文件举例说明。实际项目请根据实际业务场景获取
@@ -98,17 +104,28 @@ class DownloadFileServlet : HttpServlet() {
         // 响应头设置
         // https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Accept-Ranges
         response.setHeader("Accept-Ranges", "bytes")
-        // Content-Type 表示资源类型，如：文件类型
-        response.setHeader("Content-Type", contentType)
-        // Content-Disposition 表示响应内容以何种形式展示，是以内联的形式（即网页或者页面的一部分），还是以附件的形式下载并保存到本地。
-        // 这里文件名换成下载后你想要的文件名，inline表示内联的形式，即：浏览器直接下载
-        response.setHeader("Content-Disposition", "attachment;filename=\"${fileName}\"")
         // Content-Length 表示资源内容长度，即：文件大小
         response.setHeader("Content-Length", contentLength.toString())
         // Content-Range 表示响应了多少数据，格式为：[要下载的开始位置]-[结束位置]/[文件总大小]
         response.setHeader("Content-Range", "bytes " + startByte + "-" + endByte + "/" + file.length())
-        response.status = HttpServletResponse.SC_OK
         response.contentType = contentType
+
+        when (downloadMode) {
+            DOWNLOAD_MODE_DOWNLOAD -> {
+                // Content-Disposition 表示响应内容以何种形式展示，是以内联的形式（即网页或者页面的一部分），还是以附件的形式下载并保存到本地。
+                // 这里文件名换成下载后你想要的文件名，inline表示内联的形式，即：浏览器直接下载
+                response.setHeader("Content-Disposition", "attachment;filename=\"${fileName}\"")
+                //表示服务器返回了请求的完整资源
+                response.status = HttpServletResponse.SC_OK
+            }
+
+            DOWNLOAD_MODE_PLAY_ONLINE -> {
+                //表示服务器成功处理了部分请求，并返回了部分资源
+                response.status = HttpServletResponse.SC_PARTIAL_CONTENT
+            }
+        }
+
+
         var outputStream: BufferedOutputStream? = null
         var randomAccessFile: RandomAccessFile? = null
         // 已传送数据大小

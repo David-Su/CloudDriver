@@ -53,9 +53,9 @@ class UploadFileServletV2 : HttpServlet() {
             val bufferSize = DEFAULT_BUFFER_SIZE
             val fileName = part.submittedFileName
             val isVideo = servletContext
-                    .getMimeType(fileName)
-                    ?.startsWith("video")
-                    ?: false
+                .getMimeType(fileName)
+                ?.startsWith("video")
+                ?: false
             val saveFile = File(buildString {
                 append(tempDir)
                 append(File.separator)
@@ -78,7 +78,7 @@ class UploadFileServletV2 : HttpServlet() {
                     while (true) {
                         val bytes = input.read(buffer)
 
-                        if (bytes <0) break
+                        if (bytes < 0) break
 
                         output.write(buffer, 0, bytes)
 
@@ -94,20 +94,19 @@ class UploadFileServletV2 : HttpServlet() {
                             speed = 0
                             progress = 0.0
                         } else {
-
                             speed = System.currentTimeMillis()
-                                    .takeIf { it > localLastCalcSpeedTime && it - localLastCalcSpeedTime > 500L }
-                                    ?.let { (bytesCopied - lastRead) / (it - localLastCalcSpeedTime) * 1000 }
-                                    ?: continue
+                                .takeIf { it > localLastCalcSpeedTime && it - localLastCalcSpeedTime > 500L }
+                                ?.let { (bytesCopied - lastRead) / (it - localLastCalcSpeedTime) * 1000 }
+                                ?: continue
 
                             logger.info {
                                 "bytesCopied->${bytesCopied} lastRead->${lastRead} speed->${speed}"
                             }
 
                             progress = bytesCopied
-                                    .toBigDecimal()
-                                    .divide(contentLength.toBigDecimal(), 2, RoundingMode.DOWN)
-                                    .toDouble()
+                                .toBigDecimal()
+                                .divide(contentLength.toBigDecimal(), 2, RoundingMode.DOWN)
+                                .toDouble()
                         }
 
                         lastRead = bytesCopied
@@ -141,7 +140,11 @@ class UploadFileServletV2 : HttpServlet() {
                 Files.move(saveFile, realFile)
 
                 if (isVideo) { //生成预览图
-                    val imagePath = FileUtil.getWholePath(Cons.Path.TEMP_PREVIEW_DIR, path, fileName.substringBeforeLast(".") + ".png")
+                    val imagePath = FileUtil.getWholePath(
+                        Cons.Path.TEMP_PREVIEW_DIR,
+                        path,
+                        fileName.substringBeforeLast(".") + ".png"
+                    )
 //                logger.info("imagePath：${imagePath}")
                     FFmpegUtil.extraMiddleFrameImg(realFile.absolutePath, imagePath)
                 }
