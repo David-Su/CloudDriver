@@ -4,37 +4,55 @@ import cloud.config.Cons
 import cloud.manager.logger
 import cloud.util.FFmpegUtil
 import cloud.util.FileUtil
+import cloud.util.ImageCompressUtil
 import com.google.common.net.MediaType
 import kotlinx.coroutines.*
 import java.io.File
 import jakarta.servlet.ServletContextEvent
 import jakarta.servlet.ServletContextListener
 import jakarta.servlet.annotation.WebListener
+import kotlinx.coroutines.flow.*
+import org.apache.commons.io.FileUtils
+import java.time.Duration
 
 @WebListener
 class GlobalListener : ServletContextListener {
 
-    private val context = SupervisorJob() + Dispatchers.Default
+    private val context = SupervisorJob() + Dispatchers.Default + CoroutineExceptionHandler { _, throwable ->
+        throwable.printStackTrace()
+        logger.info {
+            "contextInitialized异常:${throwable.printStackTrace()}"
+        }
+    }
 
     override fun contextInitialized(sce: ServletContextEvent?): Unit = runBlocking(context = context) {
 
+        val startTime = System.currentTimeMillis()
+
         sce ?: return@runBlocking
+
         val userDir = File(Cons.Path.DATA_DIR)
         if (!userDir.exists()) {
             userDir.mkdirs()
+            return@runBlocking
         }
 
+//        syncImpl(userDir, sce, startTime)
+
         userDir.walkTopDown()
-            .forEach { file ->
-                async {
-                    val mediaType = sce.servletContext
-                        .getMimeType(file.name)
-                        .also { it ?: return@async }
-                        .let { MediaType.parse(it) }
-
-
-                    if (!mediaType.`is`(MediaType.ANY_VIDEO_TYPE)) return@async
-
+            .asFlow()
+            .filter { it.isFile }
+            .filter {
+                sce.servletContext
+                    .getMimeType(it.name)
+                    ?.takeIf { it.isNotEmpty() }
+                    ?.let { MediaType.parse(it) }
+                    ?.`is`(MediaType.ANY_VIDEO_TYPE)
+                    ?: false
+            }
+            .flatMapMerge { file ->
+                flow<Unit> {
+                    val taskStartTime = System.currentTimeMillis()
                     //相对路径
                     val path = FileUtil
                         .getRelativePath(file, userDir)
@@ -46,22 +64,126 @@ class GlobalListener : ServletContextListener {
                         .listFiles()
                         ?.find { it.name.substringBeforeLast(".") == file.name.substringBeforeLast(".") }
 
+                    logger.info { "压缩图片-找到对应的预览图:${file.name}  ${preview}" }
+
                     if (preview == null) {
-
                         //生成预览图
-                        val imagePath =
-                            FileUtil.getWholePath(previewParentPath, file.name.substringBeforeLast(".") + ".png")
-//                logger.info("imagePath：${imagePath}")
-                        FFmpegUtil.extraMiddleFrameImg(file.absolutePath, imagePath)
-
+                        val imagePath = FileUtil.getWholePath(
+                            previewParentPath,
+                            "${file.name.substringBeforeLast(".")}_temp" + ".png"
+                        )
+                        //使用IO调度器获取视频某一帧的图片
+                        withContext(Dispatchers.IO + CoroutineExceptionHandler { _, throwable ->
+                            throwable.printStackTrace()
+                            logger.info { "压缩图片-extraMiddleFrameImg异常:${file.name}  ${throwable}" }
+                        }) {
+                            logger.info { "压缩图片-获取视频某一帧的图片-进入协程:${file.name}" }
+                            FFmpegUtil.extraMiddleFrameImg(file.absolutePath, imagePath)
+                        }
+                        val compressImagePath = FileUtil.getWholePath(
+                            previewParentPath,
+                            file.name.substringBeforeLast(".") + ".jpg"
+                        )
+                        //使用Default调度器压缩图片
+                        withContext(Dispatchers.Default + CoroutineExceptionHandler { _, throwable ->
+                            throwable.printStackTrace()
+                            logger.info { "压缩图片-压缩图片异常:${file.name}  ${throwable}" }
+                        }) {
+                            logger.info { "压缩图片-压缩图片-进入协程:${file.name}  " }
+                            ImageCompressUtil.previewCompress(imagePath, compressImagePath)
+                        }
+                        logger.info {
+                            val imageFile = File(imagePath)
+                            val compressedFile = File(compressImagePath)
+                            buildString {
+                                append("压缩图片-结束:${file.name}  ")
+                                appendLine()
+                                append("图片路径: ${imageFile.absolutePath}->${compressedFile.absolutePath}")
+                                appendLine()
+                                append("图片大小: ${imageFile.length()}->${compressedFile.length()}")
+                                appendLine()
+                                append("耗时: ${System.currentTimeMillis() - taskStartTime}")
+                            }
+                        }
+                        FileUtil.deleteFile(File(imagePath))
                     }
                 }
             }
+            .collect()
 
-
+        logger.info {
+            "压缩图片总耗时:${System.currentTimeMillis() - startTime}"
+        }
     }
 
-    override fun contextDestroyed(sce: ServletContextEvent?) {
+    private fun syncImpl(userDir: File, sce: ServletContextEvent, startTime: Long) {
+        val deferreds = userDir.walkTopDown()
+            .filter { it.isFile }
+            .filter {
+                sce.servletContext
+                    .getMimeType(it.name)
+                    ?.takeIf { it.isNotEmpty() }
+                    ?.let { MediaType.parse(it) }
+                    ?.`is`(MediaType.ANY_VIDEO_TYPE)
+                    ?: false
+            }
+            .forEach { file ->
+
+                logger.info { "压缩图片-检查源文件:${file.absolutePath}" }
+                val startTime = System.currentTimeMillis()
+
+                //相对路径
+                val path = FileUtil
+                    .getRelativePath(file, userDir)
+                    //去掉最后一个元素，只要父路径
+                    .let { if (it.isNotEmpty()) it.subList(0, it.size - 1) else it }
+                val previewParentPath =
+                    FileUtil.getWholePath(Cons.Path.TEMP_PREVIEW_DIR, FileUtil.getWholePath(path))
+                val preview = File(previewParentPath)
+                    .listFiles()
+                    ?.find { it.name.substringBeforeLast(".") == file.name.substringBeforeLast(".") }
+
+                logger.info { "压缩图片-找到对应的预览图:${file.name}  ${preview}" }
+
+                if (preview == null) {
+                    //生成预览图
+                    val imagePath = FileUtil.getWholePath(
+                        previewParentPath,
+                        "${file.name.substringBeforeLast(".")}_temp" + ".png"
+                    )
+                    logger.info { "压缩图片-获取视频某一帧的图片" }
+                    //使用IO调度器获取视频某一帧的图片
+                    FFmpegUtil.extraMiddleFrameImg(file.absolutePath, imagePath)
+                    val compressImagePath = FileUtil.getWholePath(
+                        previewParentPath,
+                        file.name.substringBeforeLast(".") + ".jpg"
+                    )
+                    logger.info { "压缩图片-压缩图片:${file.name}  " }
+                    //使用Default调度器压缩图片
+                    ImageCompressUtil.previewCompress(imagePath, compressImagePath)
+                    logger.info {
+                        val imageFile = File(imagePath)
+                        val compressedFile = File(compressImagePath)
+                        buildString {
+                            append("压缩图片-结束:${file.name}  ")
+                            appendLine()
+                            append("图片路径: ${imageFile.absolutePath}->${compressedFile.absolutePath}")
+                            appendLine()
+                            append("图片大小: ${imageFile.length()}->${compressedFile.length()}")
+                            appendLine()
+                            append("耗时: ${System.currentTimeMillis() - startTime}")
+                            appendLine()
+                        }
+                    }
+                    FileUtils.delete(File(imagePath))
+                }
+            }
+
+        logger.info { "全局初始化耗时:${System.currentTimeMillis() - startTime}" }
+    }
+
+    override fun contextDestroyed(sce: ServletContextEvent) {
+        logger.info { "contextDestroyed:$sce" }
         context.cancel()
     }
 }

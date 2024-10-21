@@ -17,6 +17,7 @@ import jakarta.servlet.http.HttpServlet
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.apache.commons.fileupload2.core.FileUploadException
+import org.apache.commons.io.FileUtils
 
 @WebServlet("/uploadfilev2")
 @MultipartConfig
@@ -140,13 +141,12 @@ class UploadFileServletV2 : HttpServlet() {
                 Files.move(saveFile, realFile)
 
                 if (isVideo) { //生成预览图
-                    val imagePath = FileUtil.getWholePath(
-                        Cons.Path.TEMP_PREVIEW_DIR,
-                        path,
-                        fileName.substringBeforeLast(".") + ".png"
-                    )
-//                logger.info("imagePath：${imagePath}")
+                    val imagePath = FileUtil.getWholePath(Cons.Path.TEMP_PREVIEW_DIR, path, "${fileName.substringBeforeLast(".")}_temp" + ".png")
                     FFmpegUtil.extraMiddleFrameImg(realFile.absolutePath, imagePath)
+                    val compressImagePath = FileUtil.getWholePath(Cons.Path.TEMP_PREVIEW_DIR, path, fileName.substringBeforeLast(".") + ".jpg")
+                    ImageCompressUtil.previewCompress(imagePath,compressImagePath)
+                    FileUtils.delete(File(imagePath))
+                    logger.info { "压缩图片: 原大小->${File(imagePath).length()}  压缩后大小->${File(compressImagePath).length()}" }
                 }
             }
         }

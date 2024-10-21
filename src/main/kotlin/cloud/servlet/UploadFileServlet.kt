@@ -17,6 +17,7 @@ import org.apache.commons.fileupload2.core.DiskFileItemFactory
 import org.apache.commons.fileupload2.core.FileItem
 import org.apache.commons.fileupload2.core.FileUploadException
 import org.apache.commons.fileupload2.jakarta.JakartaServletFileUpload
+import org.apache.commons.io.FileUtils
 import java.io.FileOutputStream
 import java.nio.file.Files
 
@@ -168,10 +169,13 @@ class UploadFileServlet : HttpServlet() {
                     val imagePath = FileUtil.getWholePath(
                         Cons.Path.TEMP_PREVIEW_DIR,
                         path,
-                        fileName.substringBeforeLast(".") + ".png"
+                        "${fileName.substringBeforeLast(".")}_temp" + ".png"
                     )
-                    //logger.info("imagePath：${imagePath}")
                     FFmpegUtil.extraMiddleFrameImg(realFile.absolutePath, imagePath)
+                    val compressImagePath = FileUtil.getWholePath(Cons.Path.TEMP_PREVIEW_DIR, path, fileName.substringBeforeLast(".") + ".jpg")
+                    ImageCompressUtil.previewCompress(imagePath,compressImagePath)
+                    logger.info { "压缩图片: 原大小->${File(imagePath).length()}  压缩后大小->${File(compressImagePath).length()}" }
+                    FileUtil.deleteFile(File(imagePath))
                 }
             }
         } catch (e: Exception) {

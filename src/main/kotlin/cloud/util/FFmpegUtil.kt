@@ -1,6 +1,7 @@
 package cloud.util
 
 import cloud.manager.logger
+import org.bytedeco.javacpp.Loader
 import org.bytedeco.javacv.FFmpegFrameGrabber
 import org.bytedeco.javacv.Java2DFrameConverter
 import java.io.File
@@ -10,6 +11,11 @@ import javax.imageio.ImageIO
 object FFmpegUtil {
 
     fun extraMiddleFrameImg(videoPath: String, outPutPath: String): Boolean {
+
+//        if (!isFileValid(videoPath)) {
+//            return false
+//        }
+
         val grabber: FFmpegFrameGrabber = try {
             FFmpegFrameGrabber.createDefault(videoPath)
         } catch (e: Exception) {
@@ -41,10 +47,31 @@ object FFmpegUtil {
             e.printStackTrace()
         }
 
-        logger.info { "关闭grabber" }
         grabber.close()
 
         return outPutFile.exists()
+    }
+
+    private fun isFileValid(filePath: String): Boolean {
+        if (File(filePath).extension != "mp4"){
+            return true
+        }
+        val ffmpegPath = Loader.load(Class.forName("org.bytedeco.ffmpeg.ffmpeg"))
+        val cmd = "${ffmpegPath} -i $filePath -v error -map 0:1 -f null -"
+
+        val output = Runtime.getRuntime()
+            .exec(cmd)
+            .inputStream
+            .bufferedReader()
+            .use { it.readText() }
+
+        if (output.isNotEmpty()) {
+            logger.info {
+                "错误"+output
+            }
+        }
+
+        return output.isNullOrEmpty()
     }
 
 }
