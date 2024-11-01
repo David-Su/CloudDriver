@@ -90,7 +90,7 @@ class OpenDirServlet : HttpServlet() {
 
             val preview = File(previewParentPath)
                 .listFiles()
-                ?.find { it.name.substringBeforeLast(".") == file.name.substringBeforeLast(".") }
+                ?.find { it.name.substringBeforeLast(".") == file.name }
 
             val fileType: Int
             val previewPath: String
