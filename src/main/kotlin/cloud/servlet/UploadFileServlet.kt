@@ -169,10 +169,10 @@ class UploadFileServlet : HttpServlet() {
                     val imagePath = FileUtil.getWholePath(
                         Cons.Path.TEMP_PREVIEW_DIR,
                         path,
-                        "${fileName.substringBeforeLast(".")}_temp" + ".png"
+                        "${fileName}.temp" + ".png"
                     )
                     FFmpegUtil.extraMiddleFrameImg(realFile.absolutePath, imagePath)
-                    val compressImagePath = FileUtil.getWholePath(Cons.Path.TEMP_PREVIEW_DIR, path, fileName.substringBeforeLast(".") + ".jpg")
+                    val compressImagePath = FileUtil.getWholePath(Cons.Path.TEMP_PREVIEW_DIR, path, "$fileName.jpg")
                     ImageCompressUtil.previewCompress(imagePath,compressImagePath)
                     logger.info { "压缩图片: 原大小->${File(imagePath).length()}  压缩后大小->${File(compressImagePath).length()}" }
                     FileUtil.deleteFile(File(imagePath))
