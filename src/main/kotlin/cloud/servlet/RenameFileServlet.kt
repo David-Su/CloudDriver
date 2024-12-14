@@ -31,15 +31,34 @@ class RenameFileServlet : HttpServlet() {
         logger.info { "newFile:$newFile" }
 
         if (!sourceFile.exists() || newFile.exists()) {
-            resp.writer.write(JsonUtil.toJson(Response<Any?>(CodeMessage.DIR_OR_FILE_ALREADY_EXIST.code, CodeMessage.DIR_OR_FILE_ALREADY_EXIST.message, null)))
+            resp.writer.write(
+                JsonUtil.toJson(
+                    Response<Any?>(
+                        CodeMessage.DIR_OR_FILE_ALREADY_EXIST.code,
+                        CodeMessage.DIR_OR_FILE_ALREADY_EXIST.message,
+                        null
+                    )
+                )
+            )
             return
         }
 
-        val sourcePreviewFile: File? = if (sourceFile.isFile) PreviewFileUtil.getPreviewFile(sourceFile, File(Cons.Path.DATA_DIR)) else PreviewFileUtil.getPreviewParentFile(sourceFile, File(Cons.Path.DATA_DIR))
+        val sourcePreviewFile: File? = if (sourceFile.isFile) PreviewFileUtil.getPreviewFile(
+            sourceFile,
+            File(Cons.Path.DATA_DIR)
+        ) else PreviewFileUtil.getPreviewParentFile(sourceFile, File(Cons.Path.DATA_DIR))
         logger.info { "sourcePreviewFile:$sourcePreviewFile" }
 
         if (!sourceFile.renameTo(newFile)) {
-            resp.writer.write(JsonUtil.toJson(Response<Any?>(CodeMessage.RENAME_FILE_FAIL.code, CodeMessage.RENAME_FILE_FAIL.message, null)))
+            resp.writer.write(
+                JsonUtil.toJson(
+                    Response<Any?>(
+                        CodeMessage.RENAME_FILE_FAIL.code,
+                        CodeMessage.RENAME_FILE_FAIL.message,
+                        null
+                    )
+                )
+            )
             return
         }
 
@@ -53,9 +72,10 @@ class RenameFileServlet : HttpServlet() {
 
             if (sourcePreviewFile.isFile) { //sourceFile是文件的情况
 
-                val newPreviewFile = File(newPreviewFileParent, newFile.name.let {
-                    it.replaceAfterLast(".", sourcePreviewFile.extension)
-                })
+                val newPreviewFile = File(
+                    newPreviewFileParent,
+                    "${newFile.name}.${sourcePreviewFile.extension}"
+                )
 
                 if (newPreviewFile.exists()) {
                     FileUtil.deleteFile(newPreviewFile)
