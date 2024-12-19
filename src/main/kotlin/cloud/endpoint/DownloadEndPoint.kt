@@ -42,6 +42,7 @@ class DownloadEndPoint {
         val token = session.requestParameterMap["token"]?.getOrNull(0)
 
         if (token.isNullOrEmpty() || !TokenUtil.valid(token)) {
+            logger.info { "Token is invalid token: $token" }
             session.close()
             return
         }
@@ -99,7 +100,7 @@ class DownloadEndPoint {
 
     @OnClose
     fun onClose() {
-        logger.info { "" }
+        logger.info { "onClose" }
         listener?.also { UploadTaskManager.removeListener(username, it) }
         debugTimer.cancel()
     }
